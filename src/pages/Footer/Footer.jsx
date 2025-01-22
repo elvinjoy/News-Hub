@@ -30,7 +30,7 @@ const Footer = () => {
         <Grid item xs={12} md={4}>
           <Box sx={{ textAlign: "center" }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
-              <span style={{ color: "#3f51b5" }}>News Blog</span>
+              <span style={{ color: "#3f51b5" }}>News Hub</span>
             </Typography>
             <Typography variant="body1" gutterBottom>
               Join the newsletter

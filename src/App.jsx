@@ -5,6 +5,7 @@ import Login from './pages/Login/Login';
 import Navbar from './pages/Navbar/Navbar'
 import Footer from './pages/Footer/Footer'
 import AddBlog from "./pages/AddBlog/AddBlog";
+import ReadMore from "./pages/ReadMore/ReadMore";
 import './App.css'
 
 function App() {
@@ -18,15 +19,9 @@ function App() {
           <Route path="/login" element={< Login />} />
           <Route path="/footer" element={<Footer />} />
           <Route path="/addblog" element={<AddBlog />} />
-          </Routes>
+          <Route path="/readmore" element={<ReadMore />} />
+        </Routes>
       </Router>
-
-      {/* <Navbar />
-      <Home />
-      <SignUp />
-      <Login />
-      <AddBlog />
-      <Footer /> */}
     </>
   )
 }
