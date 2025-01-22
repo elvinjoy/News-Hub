@@ -1,49 +1,53 @@
 import React from 'react';
-import { Box, Typography, InputBase, styled } from '@mui/material';
+import { Box, Typography, InputBase, styled, IconButton } from '@mui/material';
 import BlogDisplay from '../components/BlogDisplay/BlogDisplay';
+import Footer from '../pages/Footer/Footer';
+import AddIcon from '@mui/icons-material/Add';  // Plus icon for adding
+import EditIcon from '@mui/icons-material/Edit'; // Edit icon for editing
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const FullScreenContainer = styled(Box)`
   display: flex;
-  flex-direction: column;  // Stack components vertically
-  justify-content: flex-start;  // Align items to the top
-  align-items: center; // Center content horizontally
-  background-color: #F5F5F5;  // Light gray background for the full screen
-  padding: 1rem;  // Add padding for better spacing
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #F5F5F5;
+  padding: 1rem;
   width: 100%;
-  min-height: 100vh;  // Ensure full height, but will expand if content is taller
+  min-height: 100vh;
 `;
 
 const BoxContainer = styled(Box)`
-  background-color: #fff;  // White background for the box
+  background-color: #fff;
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  width: 90%;  // Increased width to 90%
-  max-width: 1250px;  // Optional max-width for more space
-  text-align: left;  // Align the text to the left
+  width: 90%;
+  max-width: 1250px;
+  text-align: left;
   display: flex;
-  flex-direction: column;  // Stack elements vertically
-  justify-content: flex-start;  // Start from the top
-  margin-bottom: 2rem;  // Add margin to the bottom for spacing
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: 2rem;
 `;
 
 const HeaderContainer = styled(Box)`
   display: flex;
-  justify-content: space-between;  // Space between the text and search bar
+  justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-bottom: 2px solid #ccc;  // Add a line under the text and search bar
-  padding-bottom: 1rem;  // Add space between the content and the line
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 1rem;
 `;
 
 const TextContainer = styled(Box)`
-  flex-grow: 1;  // Allows text to take up remaining space
+  flex-grow: 1;
 `;
 
 const SearchBoxContainer = styled(Box)`
   display: flex;
   align-items: center;
-  position: relative;  // Make sure the button is positioned within the input container
+  position: relative;
 `;
 
 const SearchInput = styled(InputBase)`
@@ -51,53 +55,112 @@ const SearchInput = styled(InputBase)`
   color: #333;
   padding: 0.5rem 1rem;
   border-radius: 50px;
-  border: 1px solid #ccc;  // Add border to the search input
+  border: 1px solid #ccc;
   width: 100%;
-  max-width: 300px;  // Maximum width for the input
+  max-width: 300px;
   box-sizing: border-box;
   &:focus {
     outline: none;
-    border-color: #333;  // Focus state changes the border color
+    border-color: #333;
   }
 
   @media (max-width: 600px) {
-    max-width: 200px;  // Make the search input smaller on mobile devices
+    max-width: 200px;
   }
 `;
 
+const ButtonContainer = styled(Box)`
+  position: fixed;
+  right: 2rem;
+  bottom: 8rem;  // Increase the bottom value to create space from the footer
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
 const Home = () => {
+  const navigate = useNavigate(); // Initialize the navigate function
+
+  // Function to handle navigation
+  const handleAddClick = () => {
+    navigate('/addblog'); // Redirect to the /addblog path
+  };
+
+  const handleEditClick = () => {
+    navigate('/allblogs'); // You can adjust this logic to handle different routes for editing if needed
+  };
+
   return (
-    <FullScreenContainer>
-      <BoxContainer>
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          fontFamily="'Roboto', sans-serif"  // Changed the font family for the title
+    <>
+      <FullScreenContainer>
+        <BoxContainer>
+          <Typography
+            variant="h4"
+            fontWeight="bold"
+            fontFamily="'Roboto', sans-serif"
+          >
+            News Hub
+          </Typography>
+
+          <HeaderContainer>
+            <TextContainer>
+              <Typography
+                variant="body1"
+                mt={2}
+                maxWidth="70%"
+                fontSize="1.2rem"
+              >
+                Stay updated with the latest news and stories from around the world.
+              </Typography>
+            </TextContainer>
+
+            <SearchBoxContainer>
+              <SearchInput placeholder="Search for news..." />
+            </SearchBoxContainer>
+          </HeaderContainer>
+
+          {/* BlogDisplay component here */}
+          <BlogDisplay />
+        </BoxContainer>
+      </FullScreenContainer>
+
+      {/* Fixed Buttons */}
+      <ButtonContainer>
+        <IconButton
+          color="primary"
+          sx={{
+            backgroundColor: '#4caf50',
+            padding: '1rem',
+            borderRadius: '50%',
+            boxShadow: 2,
+            '&:hover': {
+              backgroundColor: '#45a049',
+            },
+          }}
+          onClick={handleAddClick} // Add click handler for + button
         >
-          News Hub
-        </Typography>
+          <AddIcon sx={{ color: '#fff' }} />
+        </IconButton>
 
-        <HeaderContainer>
-          <TextContainer>
-            <Typography
-              variant="body1"
-              mt={2}
-              maxWidth="70%"
-              fontSize="1.2rem"  // Increased the font size of the second text
-            >
-              Stay updated with the latest news and stories from around the world.
-            </Typography>
-          </TextContainer>
+        <IconButton
+          color="primary"
+          sx={{
+            backgroundColor: '#ffa500',
+            padding: '1rem',
+            borderRadius: '50%',
+            boxShadow: 2,
+            '&:hover': {
+              backgroundColor: '#ff9e00',
+            },
+          }}
+          onClick={handleEditClick} // Add click handler for edit button
+        >
+          <EditIcon sx={{ color: '#fff' }} />
+        </IconButton>
+      </ButtonContainer>
 
-          <SearchBoxContainer>
-            <SearchInput placeholder="Search for news..." />
-          </SearchBoxContainer>
-        </HeaderContainer>
-
-        {/* BlogDisplay component here */}
-        <BlogDisplay />
-      </BoxContainer>
-    </FullScreenContainer>
+      <Footer />
+    </>
   );
 };
 

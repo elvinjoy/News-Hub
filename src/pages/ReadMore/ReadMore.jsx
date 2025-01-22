@@ -69,8 +69,7 @@ const ReadMore = () => {
   const blog = {
     title: 'The Future of Web Development',
     topic: 'Technology, Web Development, Frontend',
-    content: `Web development is an ever-evolving field, with new tools, frameworks, and technologies being introduced at a rapid pace. In the past decade, we've seen the rise of frameworks like React, Vue, and Angular, all of which have revolutionized how developers build modern web applications. The future of web development looks promising, with advancements in artificial intelligence, machine learning, and more sophisticated backend technologies shaping the landscape. Developers can expect to work with more automation, faster deployment times, and even more integrated solutions that improve user experience. As we look ahead, it's clear that the future will be driven by both creativity and innovation. The web will continue to play a critical role in shaping our digital experiences, from eCommerce to social media, and beyond.
-    `,
+    content: `Web development is an ever-evolving field, with new tools, frameworks, and technologies being introduced at a rapid pace. In the past decade, we've seen the rise of frameworks like React, Vue, and Angular, all of which have revolutionized how developers build modern web applications. The future of web development looks promising, with advancements in artificial intelligence, machine learning, and more sophisticated backend technologies shaping the landscape. Developers can expect to work with more automation, faster deployment times, and even more integrated solutions that improve user experience. As we look ahead, it's clear that the future will be driven by both creativity and innovation. The web will continue to play a critical role in shaping our digital experiences, from eCommerce to social media, and beyond.`,
     author: 'John Doe',
     date: 'January 22, 2025',
   };
@@ -79,7 +78,7 @@ const ReadMore = () => {
     <FullScreenContainer>
       <BoxContainer>
         <BlogTitle>{blog.title}</BlogTitle>
-        <BlogTopic>{blog.topic}</BlogTopic> 
+        <BlogTopic>{blog.topic}</BlogTopic>
         <BlogContent>{blog.content}</BlogContent>
         <NameTimeContainer>
           <Typography>{blog.author}</Typography>

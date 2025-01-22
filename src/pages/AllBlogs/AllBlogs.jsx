@@ -7,16 +7,14 @@ const blogs = [
     id: 1,
     title: "The Future of Web Development",
     topic: "Technology, Web Development",
-    content:
-      "Web development is an ever-evolving field with exciting trends like AI, automation, and modern frameworks shaping its future.",
+    content:"Web development is an ever-evolving field with exciting trends like AI, automation, and modern frameworks shaping its future.",
     date: "January 22, 2025",
   },
   {
     id: 2,
     title: "The Importance of Mental Health",
     topic: "Health, Lifestyle",
-    content:
-      "Mental health is as important as physical health. It's vital to take time to care for your mind and seek help when needed.",
+    content:"Mental health is as important as physical health. It's vital to take time to care for your mind and seek help when needed.",
     date: "January 15, 2025",
   },
 ];

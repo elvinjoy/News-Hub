@@ -26,6 +26,7 @@ const AllBlogsContainer = styled(Container)`
   background-color: #f5f5f5;
   padding: 16px;
   overflow-y: auto;
+  margin-top: calc(64px + 16px); /* Adjust this to account for navbar height and padding */
 `;
 
 const BlogBox = styled(Box)`

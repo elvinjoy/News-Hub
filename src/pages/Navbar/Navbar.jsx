@@ -1,114 +1,122 @@
 import React, { useState } from "react";
-import { AppBar, Toolbar, Typography, Button, Box, Link, IconButton, Drawer } from "@mui/material";
+import { Box, Typography, IconButton, Drawer, Divider } from "@mui/material";
+import { Link } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 
 const Navbar = () => {
-  const [openDrawer, setOpenDrawer] = useState(false);
+  const [open, setOpen] = useState(false); // State to manage drawer visibility
 
-  const toggleDrawer = () => {
-    setOpenDrawer(!openDrawer);
+  const toggleDrawer = (open) => {
+    setOpen(open);
   };
 
-  const links = (
-    <Box sx={{ display: { xs: "none", md: "flex" }, gap: 4 }}>
-      <Link href="#features" underline="hover" sx={{ color: "#fff", fontWeight: 500 }}>
-        Features
-      </Link>
-      <Link href="#testimonials" underline="hover" sx={{ color: "#fff", fontWeight: 500 }}>
-        Testimonials
-      </Link>
-      <Link href="#highlights" underline="hover" sx={{ color: "#fff", fontWeight: 500 }}>
-        Highlights
-      </Link>
-      <Link href="#pricing" underline="hover" sx={{ color: "#fff", fontWeight: 500 }}>
-        Pricing
-      </Link>
-      <Link href="#faq" underline="hover" sx={{ color: "#fff", fontWeight: 500 }}>
-        FAQ
-      </Link>
-      <Link href="#blog" underline="hover" sx={{ color: "#fff", fontWeight: 500 }}>
-        Blog
-      </Link>
-    </Box>
-  );
-
   return (
-    <AppBar
-      position="sticky"
+    <Box
       sx={{
-        backgroundColor: "#121212",
-        boxShadow: "white",
-        width: "50%",
-        margin: "20px auto",
-        borderRadius: "10px",
-        paddingX: { xs: 2, sm: 4, md: 6 },
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
+        width: "100%",
+        padding: "0.5rem 2rem",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        background: "linear-gradient(90deg, #6a11cb, #2575fc)",
+        color: "#fff",
       }}
     >
-      <Toolbar
+      {/* Hamburger Icon for Mobile - Positioned Left of Welcome User */}
+      <IconButton
+        sx={{ display: { xs: "block", sm: "none" }, marginRight: "1rem" }}
+        onClick={() => toggleDrawer(true)}
+      >
+        <MenuIcon sx={{ color: "#fff" }} />
+      </IconButton>
+
+      {/* Welcome User Text */}
+      <Typography variant="h6" sx={{ fontWeight: "bold", cursor: "pointer" }}>
+        Welcome User
+      </Typography>
+
+      {/* Login and Signup Links for Desktop */}
+      <Box sx={{ display: { xs: "none", sm: "flex" }, gap: "1rem" }}>
+        <Link
+          to="/login"
+          style={{
+            color: "#fff",
+            textDecoration: "none",
+            padding: "0.5rem 1rem",
+            border: "1px solid #fff",
+            borderRadius: "5px",
+            textAlign: "center",
+            textTransform: "none",
+          }}
+        >
+          Login
+        </Link>
+        <Link
+          to="/signup"
+          style={{
+            color: "#fff",
+            backgroundColor: "#ff7eb3",
+            textDecoration: "none",
+            padding: "0.5rem 1rem",
+            borderRadius: "5px",
+            textAlign: "center",
+            textTransform: "none",
+          }}
+        >
+          Sign Up
+        </Link>
+      </Box>
+
+      {/* Side Drawer for Mobile */}
+      <Drawer
+        anchor="left"
+        open={open}
+        onClose={() => toggleDrawer(false)}
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          display: { xs: "block", sm: "none" },
         }}
       >
-        {/* Left Section (Logo) */}
-        <Typography variant="h6" component="div" sx={{ fontWeight: "bold", color: "#fff" }}>
-          Welcome User
-        </Typography>
-
-        {/* Hamburger Icon */}
-        <IconButton sx={{ display: { xs: "block", md: "none" } }} onClick={toggleDrawer}>
-          <MenuIcon sx={{ color: "#fff" }} />
-        </IconButton>
-
-        {/* Drawer for Mobile View */}
-        <Drawer
-          anchor="right"
-          open={openDrawer}
-          onClose={toggleDrawer}
-          sx={{ width: 250 }}
+        <Box
+          sx={{
+            width: 250,
+            height: "100%",
+            backgroundColor: "#6a11cb",
+            color: "#fff",
+            padding: "1rem",
+          }}
         >
-          <Box sx={{ width: 250, padding: 2 }}>
-            {links}
-          </Box>
-        </Drawer>
-
-        {/* Middle Section (Menu Links) */}
-        {links}
-
-        {/* Right Section (Buttons) */}
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <Button
-            href="#signin"
-            variant="outlined"
-            sx={{
+          <Typography variant="h6" sx={{ fontWeight: "bold", marginBottom: "1rem" }}>
+            Navigation
+          </Typography>
+          <Divider sx={{ backgroundColor: "#fff", marginBottom: "1rem" }} />
+          <Link
+            to="/login"
+            style={{
               color: "#fff",
-              borderColor: "#fff",
-              textTransform: "none",
-              "&:hover": {
-                borderColor: "#90caf9",
-                color: "#90caf9",
-              },
+              textDecoration: "none",
+              marginBottom: "1rem",
+              display: "block",
             }}
           >
-            Sign In
-          </Button>
-          <Button
-            href="#signup"
-            variant="contained"
-            sx={{
-              backgroundColor: "#90caf9",
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "#64b5f6",
-              },
+            Login
+          </Link>
+          <Link
+            to="/signup"
+            style={{
+              color: "#fff",
+              textDecoration: "none",
+              marginBottom: "1rem",
+              display: "block",
             }}
           >
             Sign Up
-          </Button>
+          </Link>
         </Box>
-      </Toolbar>
-    </AppBar>
+      </Drawer>
+    </Box>
   );
 };
 
