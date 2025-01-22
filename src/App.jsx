@@ -6,6 +6,7 @@ import Navbar from './pages/Navbar/Navbar'
 import Footer from './pages/Footer/Footer'
 import AddBlog from "./pages/AddBlog/AddBlog";
 import ReadMore from "./pages/ReadMore/ReadMore";
+import AllBlogs from "./pages/AllBlogs/AllBlogs";
 import './App.css'
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/footer" element={<Footer />} />
           <Route path="/addblog" element={<AddBlog />} />
           <Route path="/readmore" element={<ReadMore />} />
+          <Route path="/allblogs" element={<AllBlogs />} />
         </Routes>
       </Router>
     </>

@@ -6,12 +6,11 @@ const AddBlogContainer = styled(Container)`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #121212;
-  color: #fff;
+  background-color: #F5F5F5;  // Light gray background, similar to the ReadMore page
 `;
 
 const AddBlogBox = styled(Box)`
-  background-color: #1e1e1e;
+  background-color: #fff;  // White background for the content box
   padding: 32px;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -23,29 +22,29 @@ const StyledTextField = styled(TextField)`
   margin-bottom: 16px;
 
   .MuiOutlinedInput-root {
-    color: #fff;
+    color: #333;  // Dark text to match the dark text color in the content box
 
     & fieldset {
-      border-color: rgba(255, 255, 255, 0.5);
+      border-color: rgba(0, 0, 0, 0.1);
     }
 
     &:hover fieldset {
-      border-color: rgba(255, 255, 255, 0.8);
+      border-color: rgba(0, 0, 0, 0.2);
     }
 
     &.Mui-focused fieldset {
-      border-color: #fff;
+      border-color: #333;  // Dark border when focused
     }
   }
 
   .MuiInputLabel-root {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(0, 0, 0, 0.7);  // Dark label color
   }
 `;
 
 const AddBlogButton = styled(Button)`
   margin-top: 16px;
-  background-color: #1976d2;
+  background-color: #1976d2;  // Blue button similar to previous style
 
   &:hover {
     background-color: #1565c0;
