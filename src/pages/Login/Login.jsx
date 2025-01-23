@@ -1,5 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Container, TextField, Button, Typography, Link, styled } from "@mui/material";
+import axios from "axios";
+import { DEV_URL } from "../../constants/Constants"; // Import DEV_URL from Constants
+import { toast } from 'react-toastify'; // Import toast from react-toastify
+import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 const LoginContainer = styled(Container)`
     height: 100vh;
@@ -69,25 +74,78 @@ const FooterText = styled(Typography)`
 `;
 
 const Login = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState(""); 
+    const navigate = useNavigate();  // Use navigate hook for redirecting
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Check if any field is empty
+        if (!email || !password) {
+            setError("Both fields must be filled!");
+            toast.error("Both fields must be filled!");
+            return;  // Prevent form submission if fields are not filled
+        }
+
+        try {
+            const response = await axios.post(`${DEV_URL}/users/login`, {
+                email,
+                password,
+            });
+
+            // On success, clear any previous error and show success message
+            setError(""); // Clear error if the request is successful
+            toast.success("Logged in successfully!");
+
+            // Navigate to homepage ("/") or user dashboard after successful login
+            navigate("/");
+
+        } catch (error) {
+            if (error.response) {
+                // If login fails, show the error message below password field
+                const errorMessage = error.response.data.message || "Error during login";
+                setError(errorMessage);
+                toast.error(errorMessage);  // Show error using toastify
+            } else {
+                // Client-side or network error
+                setError("An error occurred while submitting the form");
+                toast.error("An error occurred while submitting the form");
+            }
+        }
+    };
+
     return (
         <LoginContainer maxWidth={false} disableGutters>
             <LoginBox>
                 <Typography variant="h4" component="h1" align="center" gutterBottom>
                     Login
                 </Typography>
-                <LoginForm component="form" noValidate>
+                <LoginForm component="form" onSubmit={handleSubmit} noValidate>
                     <StyledTextField
                         fullWidth
                         label="Email"
                         type="email"
                         variant="outlined"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                     <StyledTextField
                         fullWidth
                         label="Password"
                         type="password"
                         variant="outlined"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
+
+                    {error && (
+                        <Typography variant="body2" color="error" align="center" sx={{ marginTop: 1 }}>
+                            {error}
+                        </Typography>
+                    )}
+
                     <LoginButton
                         type="submit"
                         fullWidth
@@ -99,9 +157,7 @@ const Login = () => {
                 </LoginForm>
                 <FooterText variant="body2" align="center">
                     Don't have an account?{" "}
-                    <Link href="/signup">
-                        Sign Up
-                    </Link>
+                    <Link href="/signup">Sign Up</Link>
                 </FooterText>
             </LoginBox>
         </LoginContainer>

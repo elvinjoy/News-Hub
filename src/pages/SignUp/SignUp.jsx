@@ -1,5 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Container, TextField, Button, Typography, Link, styled } from "@mui/material";
+import axios from "axios";
+import { DEV_URL } from "../../constants/Constants"; // Import DEV_URL from Constants
+import { toast } from 'react-toastify'; // Import toast from react-toastify
+import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 const SignUpContainer = styled(Container)`
     height: 100vh;
@@ -69,30 +74,87 @@ const FooterText = styled(Typography)`
 `;
 
 const SignUp = () => {
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState(""); 
+    const navigate = useNavigate();  // Use navigate hook for redirecting
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Check if any field is empty
+        if (!fullName || !email || !password) {
+            setError("All fields must be filled!");
+            toast.error("All fields must be filled!");
+            return;  // Prevent form submission if fields are not filled
+        }
+
+        try {
+            const response = await axios.post(`${DEV_URL}/users/register`, {
+                name: fullName,
+                email,
+                password,
+            });
+
+            // On success, clear any previous error and show success message
+            setError(""); // Clear error if the request is successful
+            toast.success("Account created successfully!");
+
+            // Navigate to homepage ("/") after successful signup
+            navigate("/");
+
+        } catch (error) {
+            if (error.response) {
+                // If email already exists, show the error message below password field
+                const errorMessage = error.response.data.message || "Error during registration";
+                setError(errorMessage);
+                toast.error(errorMessage);  // Show error using toastify
+            } else {
+                // Client-side or network error
+                setError("An error occurred while submitting the form");
+                toast.error("An error occurred while submitting the form");
+            }
+        }
+    };
+
     return (
         <SignUpContainer maxWidth={false} disableGutters>
             <SignUpBox>
                 <Typography variant="h4" component="h1" align="center" gutterBottom>
                     Sign Up
                 </Typography>
-                <SignUpForm component="form" noValidate>
+                <SignUpForm component="form" onSubmit={handleSubmit} noValidate>
                     <StyledTextField
                         fullWidth
                         label="Full Name"
                         variant="outlined"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
                     />
                     <StyledTextField
                         fullWidth
                         label="Email"
                         type="email"
                         variant="outlined"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                     <StyledTextField
                         fullWidth
                         label="Password"
                         type="password"
                         variant="outlined"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
+
+                    {error && (
+                        <Typography variant="body2" color="error" align="center" sx={{ marginTop: 1 }}>
+                            {error}
+                        </Typography>
+                    )}
+
                     <SignUpButton
                         type="submit"
                         fullWidth
@@ -104,9 +166,7 @@ const SignUp = () => {
                 </SignUpForm>
                 <FooterText variant="body2" align="center">
                     Already have an account?{" "}
-                    <Link href="/login">
-                        Login
-                    </Link>
+                    <Link href="/login">Login</Link>
                 </FooterText>
             </SignUpBox>
         </SignUpContainer>

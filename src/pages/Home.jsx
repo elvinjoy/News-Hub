@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, InputBase, styled, IconButton } from '@mui/material';
 import BlogDisplay from '../components/BlogDisplay/BlogDisplay';
 import Footer from '../pages/Footer/Footer';
 import AddIcon from '@mui/icons-material/Add';  // Plus icon for adding
 import EditIcon from '@mui/icons-material/Edit'; // Edit icon for editing
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';  // Next button icon
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';  // Previous button icon
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const FullScreenContainer = styled(Box)`
@@ -78,8 +80,23 @@ const ButtonContainer = styled(Box)`
   gap: 1rem;
 `;
 
+const NavigationButtons = styled(Box)`
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  gap: 1rem;
+`;
+
+const NavigationText = styled(Typography)`
+  font-size: 1rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+  display: inline-block;
+`;
+
 const Home = () => {
   const navigate = useNavigate(); // Initialize the navigate function
+  const [page, setPage] = useState(1);  // State for current page
 
   // Function to handle navigation
   const handleAddClick = () => {
@@ -88,6 +105,16 @@ const Home = () => {
 
   const handleEditClick = () => {
     navigate('/allblogs'); // You can adjust this logic to handle different routes for editing if needed
+  };
+
+  // Handle Next Button Click
+  const handleNextPage = () => {
+    setPage(page + 1);  // Increase page number
+  };
+
+  // Handle Previous Button Click
+  const handlePrevPage = () => {
+    if (page > 1) setPage(page - 1);  // Decrease page number if not on the first page
   };
 
   return (
@@ -120,7 +147,31 @@ const Home = () => {
           </HeaderContainer>
 
           {/* BlogDisplay component here */}
-          <BlogDisplay />
+          <BlogDisplay page={page} />
+          
+          {/* Pagination Buttons with Text */}
+          <NavigationButtons>
+            <Box display="flex" alignItems="center">
+              <IconButton
+                color="primary"
+                onClick={handlePrevPage}
+                disabled={page === 1}
+              >
+                <NavigateBeforeIcon />
+              </IconButton>
+              {page > 1 && <NavigationText>Previous</NavigationText>}
+            </Box>
+
+            <Box display="flex" alignItems="center">
+              <IconButton
+                color="primary"
+                onClick={handleNextPage}
+              >
+                <NavigateNextIcon />
+              </IconButton>
+              <NavigationText>Next</NavigationText>
+            </Box>
+          </NavigationButtons>
         </BoxContainer>
       </FullScreenContainer>
 

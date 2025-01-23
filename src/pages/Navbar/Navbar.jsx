@@ -35,7 +35,7 @@ const Navbar = () => {
 
       {/* Welcome User Text */}
       <Typography variant="h6" sx={{ fontWeight: "bold", cursor: "pointer" }}>
-        Welcome User
+        Cypher
       </Typography>
 
       {/* Login and Signup Links for Desktop */}
@@ -113,6 +113,30 @@ const Navbar = () => {
             }}
           >
             Sign Up
+          </Link>
+
+          {/* New Links for Blog Management */}
+          <Link
+            to="/createblog"
+            style={{
+              color: "#fff",
+              textDecoration: "none",
+              marginBottom: "1rem",
+              display: "block",
+            }}
+          >
+            Create New Blog
+          </Link>
+          <Link
+            to="/editblog"
+            style={{
+              color: "#fff",
+              textDecoration: "none",
+              marginBottom: "1rem",
+              display: "block",
+            }}
+          >
+            Edit Blog
           </Link>
         </Box>
       </Drawer>
