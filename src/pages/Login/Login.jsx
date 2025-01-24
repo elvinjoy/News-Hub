@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Container, TextField, Button, Typography, Link, styled } from "@mui/material";
 import axios from "axios";
-import { DEV_URL } from "../../constants/Constants"; // Import DEV_URL from Constants
+import { DEV_URL } from "../../Constants/Constants"; // Import DEV_URL from Constants
 import { toast } from 'react-toastify'; // Import toast from react-toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
@@ -77,7 +77,7 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(""); 
-    const navigate = useNavigate();  // Use navigate hook for redirecting
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
