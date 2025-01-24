@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Box, Typography, IconButton, Drawer, Divider } from "@mui/material";
 import { Link } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
   const [open, setOpen] = useState(false); // State to manage drawer visibility
+  const user = useSelector((state) => state.user.user); // Fetch user details from Redux
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -35,7 +37,7 @@ const Navbar = () => {
 
       {/* Welcome User Text */}
       <Typography variant="h6" sx={{ fontWeight: "bold", cursor: "pointer" }}>
-        Cypher
+        {user?.name ? `Welcome, ${user.name}` : "Welcome"}
       </Typography>
 
       {/* Login and Signup Links for Desktop */}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, InputBase, styled, IconButton } from '@mui/material';
 import BlogDisplay from '../components/BlogDisplay/BlogDisplay';
-import Footer from '../pages/Footer/Footer';
+import Footer from '../components/Footer/Footer';
 import AddIcon from '@mui/icons-material/Add';  // Plus icon for adding
 import EditIcon from '@mui/icons-material/Edit'; // Edit icon for editing
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';  // Next button icon

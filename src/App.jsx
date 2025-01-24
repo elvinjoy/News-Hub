@@ -3,8 +3,8 @@ import { ToastContainer } from 'react-toastify';
 import Home from './pages/Home';
 import SignUp from './pages/SignUp/SignUp';
 import Login from './pages/Login/Login';
-import Navbar from './pages/Navbar/Navbar';
-import Footer from './pages/Footer/Footer';
+import Navbar from '../src/components/Navbar/Navbar';
+// import Footer from './pages/Footer/Footer';
 import AddBlog from "./pages/AddBlog/AddBlog";
 import ReadMore from "./pages/ReadMore/ReadMore";
 import AllBlogs from "./pages/AllBlogs/AllBlogs";
@@ -19,7 +19,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/SignUp" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/footer" element={<Footer />} />
+          {/* <Route path="/footer" element={<Footer />} /> */}
           <Route path="/addblog" element={<AddBlog />} />
           <Route path="/readmore" element={<ReadMore />} />
           <Route path="/allblogs" element={<AllBlogs />} />
