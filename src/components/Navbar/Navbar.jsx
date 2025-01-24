@@ -5,12 +5,23 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../../slices/userSlice";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
 const Navbar = () => {
-  const [open, setOpen] = useState(false); // State to manage drawer visibility
+  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user.user); // Fetch user details from Redux
+  const token = useSelector((state) => state.user.token); // Fetch token from Redux
+
+  let userName = "Welcome";
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token); // Decode the JWT token
+      userName = decodedToken.name || "Welcome"; // Extract name from the token
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
+  }
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -18,8 +29,8 @@ const Navbar = () => {
 
   const handleLogout = () => {
     dispatch(clearUser()); // Clear user state in Redux
-    toast.info("Logged out successfully!"); // Show a logout notification
-    navigate("/login"); // Redirect to the login page
+    toast.info("Logged out successfully!");
+    navigate("/login");
   };
 
   return (
@@ -37,7 +48,6 @@ const Navbar = () => {
         color: "#fff",
       }}
     >
-      {/* Hamburger Icon for Mobile */}
       <IconButton
         sx={{ display: { xs: "block", sm: "none" }, marginRight: "1rem" }}
         onClick={() => toggleDrawer(true)}
@@ -45,14 +55,18 @@ const Navbar = () => {
         <MenuIcon sx={{ color: "#fff" }} />
       </IconButton>
 
-      {/* Welcome User Text */}
       <Typography variant="h6" sx={{ fontWeight: "bold", cursor: "pointer" }}>
-        {user?.name ? `Welcome, ${user.name}` : "Welcome"}
+        {userName}
       </Typography>
 
-      {/* Conditional Rendering for Links and Logout */}
+      {/* {token && (
+        <Typography variant="body2" sx={{ color: "#fff", marginLeft: "1rem" }}>
+          Token: {token.slice(0, 10)}
+        </Typography>
+      )} */}
+
       <Box sx={{ display: { xs: "none", sm: "flex" }, gap: "1rem" }}>
-        {user ? (
+        {token ? (
           <Button
             onClick={handleLogout}
             sx={{
@@ -99,7 +113,6 @@ const Navbar = () => {
         )}
       </Box>
 
-      {/* Side Drawer for Mobile */}
       <Drawer
         anchor="left"
         open={open}
@@ -121,7 +134,7 @@ const Navbar = () => {
             Navigation
           </Typography>
           <Divider sx={{ backgroundColor: "#fff", marginBottom: "1rem" }} />
-          {user ? (
+          {token ? (
             <Button
               onClick={handleLogout}
               style={{

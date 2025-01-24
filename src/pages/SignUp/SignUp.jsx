@@ -103,7 +103,7 @@ const SignUp = () => {
       toast.success("Account created successfully!");
 
       // Dispatch user data to Redux store
-      dispatch(setUser({ user: { name: fullName, email } }));
+      dispatch(setUser({ token: response.data.token })); // Dispatch only the token
 
       // Navigate to homepage
       navigate("/");

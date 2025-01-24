@@ -1,17 +1,17 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  user: null, // Store user details
-  token: null, // Optional: Store JWT token
+  user: null,  // Store user details
+  token: null, // Store JWT token
 };
 
 const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {
     setUser: (state, action) => {
-      state.user = action.payload.user; // Set user details
-      state.token = action.payload.token; // Set token if available
+      state.user = action.payload.user;
+      state.token = action.payload.token;
     },
     clearUser: (state) => {
       state.user = null;
@@ -21,4 +21,5 @@ const userSlice = createSlice({
 });
 
 export const { setUser, clearUser } = userSlice.actions;
+
 export default userSlice.reducer;
