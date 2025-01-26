@@ -1,13 +1,32 @@
 import React, { useState } from "react";
-import { styled, Box, Container, TextField, Button, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {
+  styled,
+  Box,
+  Container,
+  TextField,
+  Button,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  CircularProgress,  // Import CircularProgress for the loading spinner
+} from "@mui/material";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ImageKit from "imagekit";
+import { DEV_URL } from "../../Constants/Constants";
 
 const AddBlogContainer = styled(Container)`
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 `;
 
 const AddBlogBox = styled(Box)`
@@ -21,35 +40,14 @@ const AddBlogBox = styled(Box)`
 
 const StyledTextField = styled(TextField)`
   margin-bottom: 16px;
-
-  .MuiOutlinedInput-root {
-    color: #333;
-
-    & fieldset {
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    &:hover fieldset {
-      border-color: rgba(0, 0, 0, 0.2);
-    }
-
-    &.Mui-focused fieldset {
-      border-color: #333;
-    }
-  }
-
-  .MuiInputLabel-root {
-    color: rgba(0, 0, 0, 0.7);
-  }
 `;
 
 const AddBlogButton = styled(Button)`
   margin-top: 16px;
-  background-color: #1976d2;
-
-  &:hover {
-    background-color: #1565c0;
-  }
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ImagePreviewBox = styled(Box)`
@@ -93,114 +91,186 @@ const AddBlog = () => {
   const [content, setContent] = useState("");
   const [topic, setTopic] = useState("");
   const [visibility, setVisibility] = useState("public");
-  const [image, setImage] = useState(null); // State to store the image file
-  const [previewUrl, setPreviewUrl] = useState(null); // State to store the preview URL
+  const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [loading, setLoading] = useState(false); // Loading state
 
-  const fileInputRef = React.useRef(); // Reference for the file input
+  const fileInputRef = React.useRef();
+
+  // Access token from Redux
+  const token = useSelector((state) => state.user.token);
+
+  // ImageKit initialization
+  const imagekit = new ImageKit({
+    publicKey: "public_VJ2m1hSm+Sdf+U3VWl5h+u5dSlA=",
+    privateKey: "private_tOVZHHDsn9pznH30E5NlKZHSgw0=",
+    urlEndpoint: "https://ik.imagekit.io/elvin/",
+  });
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file); // Update the image state with the selected file
-      setPreviewUrl(URL.createObjectURL(file)); // Create a preview URL
+      setImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
   const handleImageBoxClick = () => {
-    fileInputRef.current.click(); // Trigger the file input click
+    fileInputRef.current.click();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-
-    // Append all form data
-    formData.append("title", title);
-    formData.append("content", content);
-    formData.append("topic", topic);
-    formData.append("visibility", visibility);
-
-    if (image) {
-      formData.append("image", image); // Append the image file
+  
+    // Check if the token is missing (if user is not logged in)
+    if (!token) {
+      toast.error("You must be logged in to add a blog! Please login or signup.");
+      return;
     }
-
-    // Send formData to the backend API
-    console.log("FormData:", formData);
-    // Example: axios.post('/api/blogs', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+  
+    // Check if any of the required fields are empty
+    if (!title || !content || !topic || !image) {
+      toast.error("All fields are required! Please fill in the title, content, topic, and image.");
+      return;
+    }
+  
+    setLoading(true);  // Start loading
+  
+    try {
+      const decodedToken = jwtDecode(token);
+      const { id: userId, name: userName } = decodedToken;
+  
+      // Upload the image using ImageKit
+      const uploadResponse = await imagekit.upload({
+        file: image, // The file to upload
+        fileName: `${userId}_${title}`, // Custom file name
+      });
+  
+      const imageUrl = uploadResponse.url;
+  
+      // Send the blog details to the backend
+      const blogData = {
+        title,
+        content,
+        topic,
+        visibility,
+        imageUrl,
+        userId,
+        userName,
+      };
+  
+      const response = await axios.post(
+        `${DEV_URL}/users/addblog`,
+        blogData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      toast.success("Blog saved successfully!");
+      console.log("Blog saved successfully:", response.data);
+  
+      // Clear the form fields after successful submission
+      setTitle("");
+      setContent("");
+      setTopic("");
+      setVisibility("public");
+      setImage(null);
+      setPreviewUrl(null);
+  
+    } catch (error) {
+      toast.error("Error saving blog!");
+      console.error("Error saving blog:", error);
+    } finally {
+      setLoading(false);  // Stop loading
+    }
   };
+  
 
   return (
-    <AddBlogContainer maxWidth={false} disableGutters>
-      <AddBlogBox>
-        <Typography variant="h4" component="h1" align="center" gutterBottom>
-          Add a New Blog
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <StyledTextField
-            label="Title"
-            fullWidth
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter title"
-          />
-          <StyledTextField
-            label="Topic"
-            fullWidth
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="Enter topic"
-          />
-          <StyledTextField
-            label="Content"
-            multiline
-            rows={6}
-            fullWidth
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Enter content"
-          />
+    <>
+      <ToastContainer />
+      <AddBlogContainer maxWidth={false} disableGutters>
+        <AddBlogBox>
+          <Typography variant="h4" align="center" gutterBottom>
+            Add a New Blog
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <StyledTextField
+              label="Title"
+              fullWidth
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter title"
+            />
+            <StyledTextField
+              label="Topic"
+              fullWidth
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="Enter topic"
+            />
+            <StyledTextField
+              label="Content"
+              multiline
+              rows={6}
+              fullWidth
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Enter content"
+            />
 
-          <FormControl fullWidth sx={{ marginBottom: "16px" }}>
-            <InputLabel>Visibility</InputLabel>
-            <Select
-              value={visibility}
-              onChange={(e) => setVisibility(e.target.value)}
-              label="Visibility"
+            <FormControl fullWidth sx={{ marginBottom: "16px" }}>
+              <InputLabel>Visibility</InputLabel>
+              <Select
+                value={visibility}
+                onChange={(e) => setVisibility(e.target.value)}
+                label="Visibility"
+              >
+                <MenuItem value="public">Public</MenuItem>
+                <MenuItem value="private">Private</MenuItem>
+              </Select>
+            </FormControl>
+
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              style={{ display: "none" }}
+            />
+            <ImagePreviewBox onClick={handleImageBoxClick} image={previewUrl}>
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" />
+              ) : (
+                <div className="icon-container">
+                  <PhotoCamera fontSize="large" />
+                  <Typography variant="body2" color="textSecondary">
+                    No image selected
+                  </Typography>
+                </div>
+              )}
+            </ImagePreviewBox>
+
+            <AddBlogButton
+              variant="contained"
+              color="primary"
+              type="submit"
+              fullWidth
+              disabled={loading}  // Disable button during loading
             >
-              <MenuItem value="public">Public</MenuItem>
-              <MenuItem value="private">Private</MenuItem>
-            </Select>
-          </FormControl>
-
-          {/* Image Upload Field */}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            ref={fileInputRef}
-            style={{ display: "none" }}
-          />
-
-          {/* Image Preview Box */}
-          <ImagePreviewBox onClick={handleImageBoxClick} image={previewUrl}>
-            {previewUrl ? (
-              <img src={previewUrl} alt="Preview" />
-            ) : (
-              <div className="icon-container">
-                <PhotoCamera fontSize="large" />
-                <Typography variant="body2" color="textSecondary" sx={{ marginLeft: "8px" }}>
-                  No image selected
-                </Typography>
-              </div>
-            )}
-          </ImagePreviewBox>
-
-          <AddBlogButton variant="contained" color="primary" type="submit" fullWidth>
-            Add Blog
-          </AddBlogButton>
-        </form>
-      </AddBlogBox>
-    </AddBlogContainer>
+              {loading ? (
+                <CircularProgress size={24} style={{ color: "blue" }} />
+              ) : (
+                "Add Blog"
+              )}
+            </AddBlogButton>
+          </form>
+        </AddBlogBox>
+      </AddBlogContainer>
+    </>
   );
 };
 
