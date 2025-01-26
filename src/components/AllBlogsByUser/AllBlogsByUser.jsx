@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, styled, Button, Container } from "@mui/material";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
 import { DEV_URL } from "../../Constants/Constants";
 
 // Styled components
@@ -60,17 +60,16 @@ const AllBlogsByUser = () => {
   const [blogs, setBlogs] = useState([]); // State to hold blogs
   const [loading, setLoading] = useState(true); // State for loading status
   const [error, setError] = useState(""); // State for any errors
+  const navigate = useNavigate(); // Hook to navigate to a different route
 
   // Fetch blogs when the component is mounted
   useEffect(() => {
-    console.log("User ID:", id); // Log the ID before sending the request
 
     const fetchBlogs = async () => {
       try {
         setLoading(true);
         const response = await axios.get(`${DEV_URL}/users/allblogsbyuser/${id}`);
-        console.log("Fetched blogs data:", response.data); // Debugging
-
+        // console.log("Fetched blogs data:", response.data); 
         if (response.data && response.data.blogs) {
           setBlogs(response.data.blogs); // Ensure you're setting the blogs correctly
         } else {
@@ -78,7 +77,7 @@ const AllBlogsByUser = () => {
         }
       } catch (error) {
         setError("Failed to load blogs.");
-        console.error("Error fetching blogs:", error); // Log the error for debugging
+        console.error("Error fetching blogs:", error); 
       } finally {
         setLoading(false);
       }
@@ -86,6 +85,10 @@ const AllBlogsByUser = () => {
 
     fetchBlogs();
   }, [id]);
+
+  const handleEditClick = (blogId) => {
+    navigate(`/editblog/${blogId}`); 
+  };
 
   return (
     <AllBlogsContainer maxWidth="md">
@@ -103,11 +106,13 @@ const AllBlogsByUser = () => {
             <BlogContent>{blog.content}</BlogContent>
             <BlogDate>{new Date(blog.createdAt).toLocaleDateString()}</BlogDate>
             <ActionButtons>
-              <Button variant="contained" color="primary" size="small">
-                Update
-              </Button>
-              <Button variant="contained" color="secondary" size="small">
-                Delete
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={() => handleEditClick(blog._id)} // Handle click and pass the blog ID
+              >
+                Edit
               </Button>
             </ActionButtons>
           </BlogBox>

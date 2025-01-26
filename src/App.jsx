@@ -8,6 +8,7 @@ import Navbar from '../src/components/Navbar/Navbar';
 import AddBlog from "./pages/AddBlog/AddBlog";
 import ReadMore from "./pages/ReadMore/ReadMore";
 import AllBlogs from "./pages/AllBlogs/AllBlogs";
+import EditBlogPage from "./pages/EditBlogPage/EditBlogPage"
 import './App.css';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path="/addblog" element={<AddBlog />} />
           <Route path="/blog/:id" element={<ReadMore />} />
           <Route path="/allblogsbyuser/:id" element={<AllBlogs />} />
+          <Route path="/editblog/:id" element={<EditBlogPage />} />
         </Routes>
         <ToastContainer />
       </Router>
