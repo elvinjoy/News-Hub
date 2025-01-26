@@ -7,7 +7,7 @@ import Navbar from '../src/components/Navbar/Navbar';
 // import Footer from './pages/Footer/Footer';
 import AddBlog from "./pages/AddBlog/AddBlog";
 import ReadMore from "./pages/ReadMore/ReadMore";
-import AllBlogsByUser from "./pages/AllBlogsByUser/AllBlogsByUser";
+import AllBlogs from "./pages/AllBlogs/AllBlogs";
 import './App.css';
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
           {/* <Route path="/footer" element={<Footer />} /> */}
           <Route path="/addblog" element={<AddBlog />} />
           <Route path="/blog/:id" element={<ReadMore />} />
-          <Route path="/allblogsbyuser/:id" element={<AllBlogsByUser />} />
+          <Route path="/allblogsbyuser/:id" element={<AllBlogs />} />
         </Routes>
         <ToastContainer />
       </Router>

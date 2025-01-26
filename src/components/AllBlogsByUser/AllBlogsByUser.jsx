@@ -1,32 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, styled, Button, Container } from "@mui/material";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { DEV_URL } from "../../Constants/Constants";
 
-// Mock data for user blogs
-const blogs = [
-  {
-    id: 1,
-    title: "The Future of Web Development",
-    topic: "Technology, Web Development",
-    content:
-      "Web development is an ever-evolving field with exciting trends like AI, automation, and modern frameworks shaping its future.",
-    date: "January 22, 2025",
-  },
-  {
-    id: 2,
-    title: "The Importance of Mental Health",
-    topic: "Health, Lifestyle",
-    content:
-      "Mental health is as important as physical health. It's vital to take time to care for your mind and seek help when needed.",
-    date: "January 15, 2025",
-  },
-];
-
+// Styled components
 const AllBlogsContainer = styled(Container)`
   height: 100vh;
   background-color: #f5f5f5;
   padding: 16px;
   overflow-y: auto;
-  margin-top: calc(64px + 16px); /* Adjust this to account for navbar height and padding */
+  margin-top: 10px;
 `;
 
 const BlogBox = styled(Box)`
@@ -72,24 +56,63 @@ const ActionButtons = styled(Box)`
 `;
 
 const AllBlogsByUser = () => {
+  const { id } = useParams(); // Get the 'id' from the URL
+  const [blogs, setBlogs] = useState([]); // State to hold blogs
+  const [loading, setLoading] = useState(true); // State for loading status
+  const [error, setError] = useState(""); // State for any errors
+
+  // Fetch blogs when the component is mounted
+  useEffect(() => {
+    console.log("User ID:", id); // Log the ID before sending the request
+
+    const fetchBlogs = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${DEV_URL}/users/allblogsbyuser/${id}`);
+        console.log("Fetched blogs data:", response.data); // Debugging
+
+        if (response.data && response.data.blogs) {
+          setBlogs(response.data.blogs); // Ensure you're setting the blogs correctly
+        } else {
+          setError("No blogs found.");
+        }
+      } catch (error) {
+        setError("Failed to load blogs.");
+        console.error("Error fetching blogs:", error); // Log the error for debugging
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, [id]);
+
   return (
     <AllBlogsContainer maxWidth="md">
-      {blogs.map((blog) => (
-        <BlogBox key={blog.id}>
-          <BlogTitle>{blog.title}</BlogTitle>
-          <BlogTopic>{blog.topic}</BlogTopic>
-          <BlogContent>{blog.content}</BlogContent>
-          <BlogDate>{blog.date}</BlogDate>
-          <ActionButtons>
-            <Button variant="contained" color="primary" size="small">
-              Update
-            </Button>
-            <Button variant="contained" color="secondary" size="small">
-              Delete
-            </Button>
-          </ActionButtons>
-        </BlogBox>
-      ))}
+      {loading ? (
+        <Typography>Loading blogs...</Typography>
+      ) : error ? (
+        <Typography>{error}</Typography>
+      ) : blogs.length === 0 ? (
+        <Typography>No blogs found.</Typography>
+      ) : (
+        blogs.map((blog) => (
+          <BlogBox key={blog._id}> {/* Changed id to _id */}
+            <BlogTitle>{blog.title}</BlogTitle>
+            <BlogTopic>{blog.topic}</BlogTopic>
+            <BlogContent>{blog.content}</BlogContent>
+            <BlogDate>{new Date(blog.createdAt).toLocaleDateString()}</BlogDate>
+            <ActionButtons>
+              <Button variant="contained" color="primary" size="small">
+                Update
+              </Button>
+              <Button variant="contained" color="secondary" size="small">
+                Delete
+              </Button>
+            </ActionButtons>
+          </BlogBox>
+        ))
+      )}
     </AllBlogsContainer>
   );
 };
