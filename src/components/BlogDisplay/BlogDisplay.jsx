@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Box, Typography, Button, styled } from "@mui/material";
 import { Link } from "react-router-dom"; // For navigation
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import { DEV_URL } from "../../Constants/Constants";
 
 // Styled components for the blog layout
 const BlogDetailsBox = styled(Box)`
@@ -13,7 +15,7 @@ const BlogDetailsBox = styled(Box)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 350px; /* Adjusted height */
+  height: 400px; /* Adjusted height for consistency */
   width: 30%;
   margin-right: 1.5rem;
   margin-bottom: 1.5rem;
@@ -35,7 +37,7 @@ const BlogDetailsBox = styled(Box)`
 
 const BlogImageBox = styled(Box)`
   width: 100%;
-  height: 200px; /* Adjusted height */
+  height: 200px; /* Set height to prevent stretching */
   background-color: #f0f0f0;
   border-radius: 8px;
   margin-bottom: 1rem;
@@ -113,118 +115,47 @@ const ChatIconContainer = styled(Box)`
   }
 `;
 
-// Demo blog data
-const demoData = [
-  {
-    title: "The Future of Artificial Intelligence",
-    topic: "Technology",
-    content: "Artificial Intelligence (AI) is rapidly transforming the world...",
-    author: "John Doe",
-    date: "January 22, 2025",
-    imageUrl: "https://via.placeholder.com/300/0000FF/808080?Text=AI",
-  },
-  {
-    title: "A Guide to Sustainable Living",
-    topic: "Lifestyle",
-    content: "Sustainability is the key to ensuring the future of our planet...",
-    author: "Jane Smith",
-    date: "January 18, 2025",
-    imageUrl: "https://via.placeholder.com/300/FF5733/FFFFFF?Text=Sustainability",
-  },
-  {
-    title: "Mastering Web Development",
-    topic: "Programming",
-    content: "Web development is an ever-evolving field, requiring constant updates...",
-    author: "Chris Brown",
-    date: "January 15, 2025",
-    imageUrl: "https://via.placeholder.com/300/FF0000/FFFFFF?Text=WebDev",
-  },
-  {
-    title: "The Future of Artificial Intelligence",
-    topic: "Technology",
-    content: "Artificial Intelligence (AI) is rapidly transforming the world...",
-    author: "John Doe",
-    date: "January 22, 2025",
-    imageUrl: "https://via.placeholder.com/300/0000FF/808080?Text=AI",
-  },
-  {
-    title: "A Guide to Sustainable Living",
-    topic: "Lifestyle",
-    content: "Sustainability is the key to ensuring the future of our planet...",
-    author: "Jane Smith",
-    date: "January 18, 2025",
-    imageUrl: "https://via.placeholder.com/300/FF5733/FFFFFF?Text=Sustainability",
-  },
-  {
-    title: "Mastering Web Development",
-    topic: "Programming",
-    content: "Web development is an ever-evolving field, requiring constant updates...",
-    author: "Chris Brown",
-    date: "January 15, 2025",
-    imageUrl: "https://via.placeholder.com/300/FF0000/FFFFFF?Text=WebDev",
-  },
-  {
-    title: "The Future of Artificial Intelligence",
-    topic: "Technology",
-    content: "Artificial Intelligence (AI) is rapidly transforming the world...",
-    author: "John Doe",
-    date: "January 22, 2025",
-    imageUrl: "https://via.placeholder.com/300/0000FF/808080?Text=AI",
-  },
-  {
-    title: "A Guide to Sustainable Living",
-    topic: "Lifestyle",
-    content: "Sustainability is the key to ensuring the future of our planet...",
-    author: "Jane Smith",
-    date: "January 18, 2025",
-    imageUrl: "https://via.placeholder.com/300/FF5733/FFFFFF?Text=Sustainability",
-  },
-  {
-    title: "Mastering Web Development",
-    topic: "Programming",
-    content: "Web development is an ever-evolving field, requiring constant updates...",
-    author: "Chris Brown",
-    date: "January 15, 2025",
-    imageUrl: "https://via.placeholder.com/300/FF0000/FFFFFF?Text=WebDev",
-  },
-  {
-    title: "The Future of Artificial Intelligence",
-    topic: "Technology",
-    content: "Artificial Intelligence (AI) is rapidly transforming the world...",
-    author: "John Doe",
-    date: "January 22, 2025",
-    imageUrl: "https://via.placeholder.com/300/0000FF/808080?Text=AI",
-  },
-  {
-    title: "A Guide to Sustainable Living",
-    topic: "Lifestyle",
-    content: "Sustainability is the key to ensuring the future of our planet...",
-    author: "Jane Smith",
-    date: "January 18, 2025",
-    imageUrl: "https://via.placeholder.com/300/FF5733/FFFFFF?Text=Sustainability",
-  },
-  {
-    title: "Mastering Web Development",
-    topic: "Programming",
-    content: "Web development is an ever-evolving field, requiring constant updates...",
-    author: "Chris Brown",
-    date: "January 15, 2025",
-    imageUrl: "https://via.placeholder.com/300/FF0000/FFFFFF?Text=WebDev",
-  },
-  
-];
-
 const BlogDisplay = () => {
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await axios.get(`${DEV_URL}/users/allblogs`, {
+          params: { visibility: "public" }, // Ensuring we only fetch public blogs
+        });
+        setBlogs(response.data.blogs); // Store the fetched blogs
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      } finally {
+        setLoading(false); // Stop the loading state once the request is done
+      }
+    };
+
+    fetchBlogs();
+  }, []);
+
+  if (loading) {
+    return <Typography>Loading blogs...</Typography>;
+  }
+
   return (
     <Box style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between" }}>
-      {demoData.map((blog, index) => (
+      {blogs.map((blog, index) => (
         <BlogDetailsBox key={index}>
           {/* Image */}
           <BlogImageBox>
             <img
               src={blog.imageUrl}
               alt="Blog"
-              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                maxHeight: "200px", // Added max-height for consistency
+                objectFit: "cover",
+                borderRadius: "8px",
+              }}
             />
           </BlogImageBox>
 
@@ -246,8 +177,8 @@ const BlogDisplay = () => {
 
           {/* Author and Date */}
           <NameTimeContainer>
-            <Typography>{blog.author}</Typography>
-            <Typography>{blog.date}</Typography>
+            <Typography>{blog.userName}</Typography>
+            <Typography>{new Date(blog.createdAt).toLocaleDateString()}</Typography>
           </NameTimeContainer>
         </BlogDetailsBox>
       ))}

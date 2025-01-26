@@ -259,7 +259,7 @@ const AddBlog = () => {
               color="primary"
               type="submit"
               fullWidth
-              disabled={loading}  // Disable button during loading
+              disabled={loading}
             >
               {loading ? (
                 <CircularProgress size={24} style={{ color: "blue" }} />
