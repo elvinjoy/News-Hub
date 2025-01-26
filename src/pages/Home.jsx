@@ -7,6 +7,11 @@ import EditIcon from '@mui/icons-material/Edit'; // Edit icon for editing
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';  // Next button icon
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';  // Previous button icon
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useSelector } from 'react-redux'; // Import useSelector to access Redux store
+import { jwtDecode } from 'jwt-decode'; // Import jwtDecode for decoding the token
+import { DEV_URL } from '../Constants/Constants';
+import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 const FullScreenContainer = styled(Box)`
   display: flex;
@@ -74,7 +79,7 @@ const SearchInput = styled(InputBase)`
 const ButtonContainer = styled(Box)`
   position: fixed;
   right: 2rem;
-  bottom: 8rem;  // Increase the bottom value to create space from the footer
+  bottom: 8rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -95,30 +100,43 @@ const NavigationText = styled(Typography)`
 `;
 
 const Home = () => {
-  const navigate = useNavigate(); // Initialize the navigate function
-  const [page, setPage] = useState(1);  // State for current page
+  const navigate = useNavigate();
+  const [page, setPage] = useState(1);
 
-  // Function to handle navigation
+  // Access the token from Redux store
+  const token = useSelector((state) => state.user.token);
+
+  // Decode the token to get the user ID
+  let userId = null;
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token);
+      userId = decodedToken.id; 
+    } catch (error) {
+      console.error('Invalid token:', error);
+    }
+  }
+
   const handleAddClick = () => {
-    navigate('/addblog'); // Redirect to the /addblog path
+    navigate('/addblog');
   };
 
   const handleEditClick = () => {
-    navigate('/allblogs'); // You can adjust this logic to handle different routes for editing if needed
+    if (userId) {
+      navigate(`/allblogsbyuser/${userId}`);
+    } else {
+      toast.error('You are not logged in!');
+    }
   };
 
-  // Handle Next Button Click
-  const handleNextPage = () => {
-    setPage(page + 1);  // Increase page number
-  };
-
-  // Handle Previous Button Click
-  const handlePrevPage = () => {
-    if (page > 1) setPage(page - 1);  // Decrease page number if not on the first page
-  };
+  const handleNextPage = () => setPage(page + 1);
+  const handlePrevPage = () => page > 1 && setPage(page - 1);
 
   return (
     <>
+      {/* ToastContainer to display the toast notifications */}
+      <ToastContainer />
+
       <FullScreenContainer>
         <BoxContainer>
           <Typography
@@ -184,11 +202,9 @@ const Home = () => {
             padding: '1rem',
             borderRadius: '50%',
             boxShadow: 2,
-            '&:hover': {
-              backgroundColor: '#45a049',
-            },
+            '&:hover': { backgroundColor: '#45a049' },
           }}
-          onClick={handleAddClick} // Add click handler for + button
+          onClick={handleAddClick}
         >
           <AddIcon sx={{ color: '#fff' }} />
         </IconButton>
@@ -200,11 +216,9 @@ const Home = () => {
             padding: '1rem',
             borderRadius: '50%',
             boxShadow: 2,
-            '&:hover': {
-              backgroundColor: '#ff9e00',
-            },
+            '&:hover': { backgroundColor: '#ff9e00' },
           }}
-          onClick={handleEditClick} // Add click handler for edit button
+          onClick={handleEditClick}
         >
           <EditIcon sx={{ color: '#fff' }} />
         </IconButton>
