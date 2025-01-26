@@ -1,5 +1,8 @@
-import React from 'react';
-import { Box, Typography, styled } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import { Box, Typography, styled, CircularProgress } from "@mui/material";
+import { useParams } from "react-router-dom"; // To get the blog ID from the route
+import axios from "axios";
+import { DEV_URL } from "../../Constants/Constants";
 
 // Styled components for the background and content container
 const FullScreenContainer = styled(Box)`
@@ -8,7 +11,7 @@ const FullScreenContainer = styled(Box)`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #F5F5F5;  // Light gray background
+  background-color: #f5f5f5; // Light gray background
 `;
 
 const BoxContainer = styled(Box)`
@@ -23,34 +26,34 @@ const BoxContainer = styled(Box)`
   justify-content: flex-start;
   height: auto;
   max-height: 90%;
-  overflow-y: auto;  // To prevent overflow of content
+  overflow-y: auto; // To prevent overflow of content
 `;
 
 const BlogTitle = styled(Typography)`
   font-size: 2rem;
   font-weight: bold;
   color: #333;
-  text-align: left;  // Left-align the title
-  margin-bottom: 0.5rem;  // Small bottom margin to separate from the topic
-  width: 100%;  // Ensures title takes the full width
+  text-align: left;
+  margin-bottom: 0.5rem;
+  width: 100%;
 `;
 
 const BlogTopic = styled(Typography)`
   font-size: 1.2rem;
   color: #555;
   margin-top: 0.5rem;
-  text-align: left;  // Left-align the topic
-  width: 100%;  // Ensures topic takes the full width
+  text-align: left;
+  width: 100%;
 `;
 
 const BlogContent = styled(Typography)`
   font-size: 1rem;
   color: #333;
   margin-top: 1rem;
-  white-space: pre-wrap;  // Preserve whitespace formatting
+  white-space: pre-wrap;
   line-height: 1.5;
-  text-align: left;  // Left-align the content
-  width: 100%;  // Ensures content takes the full width
+  text-align: left;
+  width: 100%;
 `;
 
 const NameTimeContainer = styled(Box)`
@@ -60,29 +63,75 @@ const NameTimeContainer = styled(Box)`
   margin-top: 1rem;
   font-size: 0.875rem;
   color: #777;
-  width: 100%;  // Ensure the container takes full width
-  text-align: left;  // Ensure the author and date are left-aligned
+  width: 100%;
+  text-align: left;
+`;
+
+const BlogImage = styled("img")`
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
 `;
 
 const ReadMore = () => {
-  // Demo blog data
-  const blog = {
-    title: 'The Future of Web Development',
-    topic: 'Technology, Web Development, Frontend',
-    content: `Web development is an ever-evolving field, with new tools, frameworks, and technologies being introduced at a rapid pace. In the past decade, we've seen the rise of frameworks like React, Vue, and Angular, all of which have revolutionized how developers build modern web applications. The future of web development looks promising, with advancements in artificial intelligence, machine learning, and more sophisticated backend technologies shaping the landscape. Developers can expect to work with more automation, faster deployment times, and even more integrated solutions that improve user experience. As we look ahead, it's clear that the future will be driven by both creativity and innovation. The web will continue to play a critical role in shaping our digital experiences, from eCommerce to social media, and beyond.`,
-    author: 'John Doe',
-    date: 'January 22, 2025',
-  };
+  const { id } = useParams(); // Get blog ID from the route
+  const [blog, setBlog] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchBlogDetails = async () => {
+      try {
+        const response = await axios.get(`${DEV_URL}/users/specificblog/${id}`);
+        setBlog(response.data.blog); // Assuming the response has `blog` in it
+      } catch (err) {
+        console.error("Error fetching blog details:", err);
+        setError("Failed to load blog details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogDetails();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <FullScreenContainer>
+        <CircularProgress />
+      </FullScreenContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <FullScreenContainer>
+        <Typography color="error">{error}</Typography>
+      </FullScreenContainer>
+    );
+  }
+
+  if (!blog) {
+    return (
+      <FullScreenContainer>
+        <Typography>No blog found!</Typography>
+      </FullScreenContainer>
+    );
+  }
 
   return (
     <FullScreenContainer>
       <BoxContainer>
+        {/* Display the blog image */}
+        {blog.imageUrl && <BlogImage src={blog.imageUrl} alt={blog.title} />}
         <BlogTitle>{blog.title}</BlogTitle>
         <BlogTopic>{blog.topic}</BlogTopic>
         <BlogContent>{blog.content}</BlogContent>
         <NameTimeContainer>
-          <Typography>{blog.author}</Typography>
-          <Typography>{blog.date}</Typography>
+          <Typography>{blog.userName || "Unknown Author"}</Typography>
+          <Typography>{new Date(blog.createdAt).toLocaleDateString()}</Typography>
         </NameTimeContainer>
       </BoxContainer>
     </FullScreenContainer>

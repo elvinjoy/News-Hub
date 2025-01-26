@@ -21,7 +21,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           {/* <Route path="/footer" element={<Footer />} /> */}
           <Route path="/addblog" element={<AddBlog />} />
-          <Route path="/readmore" element={<ReadMore />} />
+          <Route path="/blog/:id" element={<ReadMore />} />
           <Route path="/allblogs" element={<AllBlogs />} />
         </Routes>
         <ToastContainer />

@@ -125,7 +125,9 @@ const BlogDisplay = () => {
         const response = await axios.get(`${DEV_URL}/users/allblogs`, {
           params: { visibility: "public" }, // Ensuring we only fetch public blogs
         });
-        setBlogs(response.data.blogs); // Store the fetched blogs
+        // Filter only public blogs on the client side as a fallback
+        const publicBlogs = response.data.blogs.filter(blog => blog.visibility === "public");
+        setBlogs(publicBlogs);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       } finally {
@@ -152,7 +154,7 @@ const BlogDisplay = () => {
               style={{
                 width: "100%",
                 height: "100%",
-                maxHeight: "200px", // Added max-height for consistency
+                maxHeight: "200px",
                 objectFit: "cover",
                 borderRadius: "8px",
               }}
@@ -166,7 +168,7 @@ const BlogDisplay = () => {
 
           {/* Footer */}
           <FooterContainer>
-            <ReadMoreButton component={Link} to="/readmore">
+            <ReadMoreButton component={Link} to={`/blog/${blog._id}`}>
               Read More
             </ReadMoreButton>
             <ChatIconContainer>
