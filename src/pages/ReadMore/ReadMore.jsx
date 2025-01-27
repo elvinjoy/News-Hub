@@ -84,7 +84,7 @@ const ReadMore = () => {
   useEffect(() => {
     const fetchBlogDetails = async () => {
       try {
-        const response = await axios.get(`${DEV_URL}/users/specificblog/${id}`);
+        const response = await axios.get(`${DEV_URL}/blog/specificblog/${id}`);
         setBlog(response.data.blog); // Assuming the response has `blog` in it
       } catch (err) {
         console.error("Error fetching blog details:", err);

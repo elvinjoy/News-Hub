@@ -68,7 +68,7 @@ const AllBlogsByUser = () => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${DEV_URL}/users/allblogsbyuser/${id}`);
+        const response = await axios.get(`${DEV_URL}/blog/allblogsbyuser/${id}`);
         // console.log("Fetched blogs data:", response.data); 
         if (response.data && response.data.blogs) {
           setBlogs(response.data.blogs); // Ensure you're setting the blogs correctly

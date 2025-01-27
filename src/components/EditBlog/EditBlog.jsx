@@ -101,7 +101,7 @@ const EditBlog = () => {
     useEffect(() => {
         const fetchBlogDetails = async () => {
             try {
-                const response = await axios.get(`${DEV_URL}/users/specificblog/${id}`, {
+                const response = await axios.get(`${DEV_URL}/blog/specificblog/${id}`, {
                     headers: { Authorization: `Bearer ${token}` } // Include token in request headers
                 });
                 const blog = response.data.blog;
@@ -135,63 +135,45 @@ const EditBlog = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         if (!title || !content || !topic) {
-          toast.error("All fields are required! Please fill in the title, content, and topic.");
-          return;
+            toast.error("All fields are required! Please fill in the title, content, and topic.");
+            return;
         }
-      
+    
         const confirmUpdate = window.confirm("Are you sure you want to update this blog?");
         if (!confirmUpdate) return;
-      
+    
         setLoading(true);
-      
+    
         try {
-          let imageUrl = previewUrl;
-          if (image) {
-            const formData = new FormData();
-            formData.append('file', image);
-      
-            try {
-              const uploadResponse = await axios.post(`${DEV_URL}/users/editblog/${id}`, formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                  Authorization: `Bearer ${token}`
+            const updatedBlogData = {
+                title,
+                content,
+                topic,
+                visibility,
+                imageUrl: previewUrl, // Use the existing preview URL
+            };
+    
+            console.log("Sending update request with data:", updatedBlogData);
+    
+            const response = await axios.put(
+                `${DEV_URL}/blog/editblog/${id}`,
+                updatedBlogData,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
                 }
-              });
-              imageUrl = uploadResponse.data.url;
-            } catch (uploadError) {
-              console.error("Image upload error:", uploadError.response?.data || uploadError.message);
-              toast.error("Failed to upload image");
-            }
-          }
-      
-          const updatedBlogData = {
-            title,
-            content,
-            topic,
-            visibility,
-            imageUrl,
-          };
-      
-          console.log("Sending update request with data:", updatedBlogData);
-      
-          const response = await axios.put(
-            `${DEV_URL}/users/editblog/${id}`,
-            updatedBlogData,
-            {
-              headers: { Authorization: `Bearer ${token}` }
-            }
-          );
-      
-          toast.success("Blog updated successfully!");
-          console.log("Blog updated successfully!");
-          navigate(`/`);
+            );
+    
+            toast.success("Blog updated successfully!");
+            console.log("Blog updated successfully!");
+            navigate(`/`);
         } catch (error) {
-          console.error("Full error details:", error);
-          toast.error(`Error updating blog: ${error.response?.data?.message || error.message}`);
+            console.error("Error updating blog:", error);
+            toast.error(`Error updating blog: ${error.response?.data?.message || error.message}`);
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
-      };
+    };
+    
 
     const handleDelete = async () => {
         // Confirmation dialog for delete
@@ -199,8 +181,8 @@ const EditBlog = () => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`${DEV_URL}/users/deleteblog/${id}`, {
-                headers: { Authorization: `Bearer ${token}` } // Include token in request headers
+            await axios.delete(`${DEV_URL}/blog/deleteblog/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
             });
             toast.success("Blog deleted successfully!");
             console.log("Blog deleted successfully!");

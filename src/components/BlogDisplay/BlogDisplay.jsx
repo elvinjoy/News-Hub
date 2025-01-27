@@ -122,7 +122,7 @@ const BlogDisplay = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axios.get(`${DEV_URL}/users/allblogs`, {
+        const response = await axios.get(`${DEV_URL}/blog/allblogs`, {
           params: { visibility: "public" }, // Ensuring we only fetch public blogs
         });
         // Filter only public blogs on the client side as a fallback

@@ -160,7 +160,7 @@ const AddBlog = () => {
       };
   
       const response = await axios.post(
-        `${DEV_URL}/users/addblog`,
+        `${DEV_URL}/blog/addblog`,
         blogData,
         {
           headers: {
