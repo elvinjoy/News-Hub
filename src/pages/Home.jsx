@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Typography, InputBase, styled, IconButton } from '@mui/material';
 import BlogDisplay from '../components/BlogDisplay/BlogDisplay';
 import Footer from '../components/Footer/Footer';
@@ -14,6 +14,7 @@ import { DEV_URL } from '../Constants/Constants';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
+
 
 const FullScreenContainer = styled(Box)`
   display: flex;
@@ -47,6 +48,11 @@ const HeaderContainer = styled(Box)`
   width: 100%;
   border-bottom: 2px solid #ccc;
   padding-bottom: 1rem;
+  flex-direction: column; /* Stack elements vertically by default */
+  
+  @media (min-width: 500px) {
+    flex-direction: row; /* Align elements horizontally when screen width is greater than 500px */
+  }
 `;
 
 const TextContainer = styled(Box)`
@@ -76,6 +82,13 @@ const SearchInput = styled(InputBase)`
   @media (max-width: 600px) {
     max-width: 200px;
   }
+`;
+
+const ClearButton = styled(IconButton)`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 `;
 
 const ButtonContainer = styled(Box)`
@@ -192,11 +205,14 @@ const SearchResultsContainer = styled(Box)`
 const Home = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
 
+
   const token = useSelector((state) => state.user.token);
+  const searchInputRef = useRef(null);
 
   let userId = null;
   if (token) {
@@ -214,9 +230,12 @@ const Home = () => {
       try {
         const response = await axios.get(`${DEV_URL}/blog/search/${searchKeyword}`);
         if (response.data && response.data.blogs) {
-          setSearchResults(response.data.blogs);
-          if (response.data.blogs.length === 0) {
-            toast.info('No blogs found matching your search.', {
+          // Filter the blogs to only show those with 'public' visibility
+          const publicBlogs = response.data.blogs.filter(blog => blog.visibility === 'public');
+          setSearchResults(publicBlogs);
+
+          if (publicBlogs.length === 0) {
+            toast.info('No blogs found matching your search with public visibility.', {
               position: "top-right",
               autoClose: 3000,
               hideProgressBar: false,
@@ -240,6 +259,11 @@ const Home = () => {
     if (e.target.value === '') {
       setSearchResults(null);
     }
+  };
+
+  const handleClearSearch = () => {
+    setSearchKeyword('');
+    setSearchResults(null);
   };
 
   const handleAddClick = () => {
@@ -272,8 +296,36 @@ const Home = () => {
     navigate(`/allblogsbyuser/${userId}`);
   };
 
-  const handleNextPage = () => setPage(page + 1);
-  const handlePrevPage = () => page > 1 && setPage(page - 1);
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(prevPage => prevPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(prevPage => prevPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const updateTotalPages = useCallback((total) => {
+    setTotalPages(total);
+  }, []);
+
+  const handleClickOutside = (e) => {
+    if (searchInputRef.current && !searchInputRef.current.contains(e.target)) {
+      handleClearSearch();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const renderSearchResults = () => (
     <SearchResultsContainer>
@@ -322,9 +374,14 @@ const Home = () => {
     </SearchResultsContainer>
   );
 
+  const handleHomeClick = () => {
+    setSearchKeyword('');
+    setSearchResults(null);
+  };
+
   return (
     <>
-       <ToastContainer
+      <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
@@ -349,37 +406,60 @@ const Home = () => {
               </Typography>
             </TextContainer>
 
-            <SearchBoxContainer>
+            <SearchBoxContainer ref={searchInputRef}>
               <SearchInput
                 placeholder="Search for news..."
                 value={searchKeyword}
                 onChange={handleSearchChange}
                 onKeyPress={handleSearch}
               />
+              {searchKeyword && (
+                <ClearButton onClick={handleClearSearch}>
+                  <IconButton>Clear</IconButton>
+                </ClearButton>
+              )}
             </SearchBoxContainer>
           </HeaderContainer>
 
-          {/* Conditional rendering based on search state */}
           {searchResults ? (
             renderSearchResults()
           ) : (
             <>
-              <BlogDisplay page={page} />
-              <NavigationButtons>
-                <Box display="flex" alignItems="center">
-                  <IconButton color="primary" onClick={handlePrevPage} disabled={page === 1}>
-                    <NavigateBeforeIcon />
-                  </IconButton>
-                  {page > 1 && <NavigationText>Previous</NavigationText>}
-                </Box>
+              <BlogDisplay
+                page={page}
+                onUpdateTotalPages={updateTotalPages}
+              />
+              {totalPages > 1 && (
+                <NavigationButtons>
+                  <Box display="flex" alignItems="center">
+                    <IconButton
+                      color="primary"
+                      onClick={handlePrevPage}
+                      disabled={page === 1}
+                      sx={{ opacity: page === 1 ? 0.5 : 1 }}
+                    >
+                      <NavigateBeforeIcon />
+                    </IconButton>
+                    {page > 1 && <NavigationText>Previous</NavigationText>}
+                  </Box>
 
-                <Box display="flex" alignItems="center">
-                  <IconButton color="primary" onClick={handleNextPage}>
-                    <NavigateNextIcon />
-                  </IconButton>
-                  <NavigationText>Next</NavigationText>
-                </Box>
-              </NavigationButtons>
+                  <Typography variant="body1" sx={{ mx: 2 }}>
+                    Page {page} of {totalPages}
+                  </Typography>
+
+                  <Box display="flex" alignItems="center">
+                    {page < totalPages && <NavigationText>Next</NavigationText>}
+                    <IconButton
+                      color="primary"
+                      onClick={handleNextPage}
+                      disabled={page >= totalPages}
+                      sx={{ opacity: page >= totalPages ? 0.5 : 1 }}
+                    >
+                      <NavigateNextIcon />
+                    </IconButton>
+                  </Box>
+                </NavigationButtons>
+              )}
             </>
           )}
         </BoxContainer>
@@ -414,7 +494,6 @@ const Home = () => {
           <EditIcon sx={{ color: '#fff' }} />
         </IconButton>
       </ButtonContainer>
-
       <Footer />
     </>
   );

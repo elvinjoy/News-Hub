@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, Button, styled } from "@mui/material";
-import { Link } from "react-router-dom"; // For navigation
+import { Box, Typography, CircularProgress, Button } from "@mui/material";
+import { Link } from "react-router-dom";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import { styled } from "@mui/system"; 
 import { DEV_URL } from "../../Constants/Constants";
 
 // Styled components for the blog layout
@@ -44,6 +45,14 @@ const BlogImageBox = styled(Box)`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const BlogImage = styled("img")`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  max-height: 160px; /* Default height for all images */
 `;
 
 const FooterContainer = styled(Box)`
@@ -115,58 +124,71 @@ const ChatIconContainer = styled(Box)`
   }
 `;
 
-const BlogDisplay = () => {
+const BlogDisplay = ({ page, onUpdateTotalPages }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const limit = 9;
 
   useEffect(() => {
     const fetchBlogs = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(`${DEV_URL}/blog/allblogs`, {
-          params: { visibility: "public" }, // Ensuring we only fetch public blogs
+        const response = await axios.get(`${DEV_URL}/blog/blogs`, {
+          params: {
+            page,
+            limit,
+            visibility: "public"
+          }
         });
-        // Filter only public blogs on the client side as a fallback
-        const publicBlogs = response.data.blogs.filter(blog => blog.visibility === "public");
-        setBlogs(publicBlogs);
+        
+        if (response.data) {
+          setBlogs(response.data.blogs);
+          // Update the parent component's total pages
+          onUpdateTotalPages(response.data.totalPages);
+        }
       } catch (error) {
         console.error("Error fetching blogs:", error);
+        setBlogs([]);
+        onUpdateTotalPages(1); // Reset to 1 page if there's an error
       } finally {
-        setLoading(false); // Stop the loading state once the request is done
+        setLoading(false);
       }
     };
 
     fetchBlogs();
-  }, []);
+  }, [page, onUpdateTotalPages]); 
 
   if (loading) {
-    return <Typography>Loading blogs...</Typography>;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!blogs.length) {
+    return (
+      <Typography variant="h6" textAlign="center" width="100%" mt={4}>
+        No blogs available for this page.
+      </Typography>
+    );
   }
 
   return (
     <Box style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between" }}>
       {blogs.map((blog, index) => (
-        <BlogDetailsBox key={index}>
-          {/* Image */}
+        <BlogDetailsBox key={blog._id || index}>
           <BlogImageBox>
-            <img
+            <BlogImage
               src={blog.imageUrl}
               alt="Blog"
-              style={{
-                width: "100%",
-                height: "100%",
-                maxHeight: "200px",
-                objectFit: "cover",
-                borderRadius: "8px",
-              }}
             />
           </BlogImageBox>
 
-          {/* Blog Content */}
           <BlogTitle>{blog.title}</BlogTitle>
           <BlogTopic>{blog.topic}</BlogTopic>
           <BlogContent>{blog.content}</BlogContent>
 
-          {/* Footer */}
           <FooterContainer>
             <ReadMoreButton component={Link} to={`/blog/${blog._id}`}>
               Read More
@@ -177,7 +199,6 @@ const BlogDisplay = () => {
             </ChatIconContainer>
           </FooterContainer>
 
-          {/* Author and Date */}
           <NameTimeContainer>
             <Typography>{blog.userName}</Typography>
             <Typography>{new Date(blog.createdAt).toLocaleDateString()}</Typography>
