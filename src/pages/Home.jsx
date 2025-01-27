@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import { Box, Typography, InputBase, styled, IconButton } from '@mui/material';
 import BlogDisplay from '../components/BlogDisplay/BlogDisplay';
 import Footer from '../components/Footer/Footer';
-import AddIcon from '@mui/icons-material/Add';  // Plus icon for adding
-import EditIcon from '@mui/icons-material/Edit'; // Edit icon for editing
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';  // Next button icon
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';  // Previous button icon
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { useSelector } from 'react-redux'; // Import useSelector to access Redux store
-import { jwtDecode } from 'jwt-decode'; // Import jwtDecode for decoding the token
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { useNavigate, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { jwtDecode } from 'jwt-decode';
 import { DEV_URL } from '../Constants/Constants';
-import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
-import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
+import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FullScreenContainer = styled(Box)`
   display: flex;
@@ -99,101 +101,290 @@ const NavigationText = styled(Typography)`
   display: inline-block;
 `;
 
+const BlogDetailsBox = styled(Box)`
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 400px;
+  width: 30%;
+  margin-right: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  @media (max-width: 900px) {
+    width: 45%;
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+`;
+
+const BlogImageBox = styled(Box)`
+  width: 100%;
+  height: 200px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const FooterContainer = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+`;
+
+const BlogTitle = styled(Typography)`
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+`;
+
+const BlogTopic = styled(Typography)`
+  font-size: 1rem;
+  color: #555;
+  margin-top: 0.3rem;
+`;
+
+const BlogContent = styled(Typography)`
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  color: #333;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+`;
+
+const NameTimeContainer = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #777;
+  width: 100%;
+`;
+
+const SearchResultsContainer = styled(Box)`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: 2rem;
+`;
+
 const Home = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Access the token from Redux store
   const token = useSelector((state) => state.user.token);
 
-  // Decode the token to get the user ID
   let userId = null;
   if (token) {
     try {
       const decodedToken = jwtDecode(token);
-      userId = decodedToken.id; 
+      userId = decodedToken.id;
     } catch (error) {
       console.error('Invalid token:', error);
     }
   }
 
+  const handleSearch = async (e) => {
+    if (e.key === 'Enter' && searchKeyword.trim()) {
+      setIsSearching(true);
+      try {
+        const response = await axios.get(`${DEV_URL}/blog/search/${searchKeyword}`);
+        if (response.data && response.data.blogs) {
+          setSearchResults(response.data.blogs);
+          if (response.data.blogs.length === 0) {
+            toast.info('No blogs found matching your search.', {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchKeyword(e.target.value);
+    if (e.target.value === '') {
+      setSearchResults(null);
+    }
+  };
+
   const handleAddClick = () => {
+    if (!userId) {
+      toast.warning('Please log in to add a blog.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
+    }
     navigate('/addblog');
   };
 
   const handleEditClick = () => {
-    if (userId) {
-      navigate(`/allblogsbyuser/${userId}`);
-    } else {
-      toast.error('You are not logged in!');
+    if (!userId) {
+      toast.warning('Please log in to edit your blogs.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
     }
+    navigate(`/allblogsbyuser/${userId}`);
   };
 
   const handleNextPage = () => setPage(page + 1);
   const handlePrevPage = () => page > 1 && setPage(page - 1);
 
+  const renderSearchResults = () => (
+    <SearchResultsContainer>
+      {searchResults.length > 0 ? (
+        searchResults.map((blog, index) => (
+          <BlogDetailsBox key={index}>
+            <BlogImageBox>
+              <img
+                src={blog.imageUrl}
+                alt="Blog"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  maxHeight: '200px',
+                  objectFit: 'cover',
+                  borderRadius: '8px',
+                }}
+              />
+            </BlogImageBox>
+
+            <BlogTitle>{blog.title}</BlogTitle>
+            <BlogTopic>{blog.topic}</BlogTopic>
+            <BlogContent>{blog.content}</BlogContent>
+
+            <FooterContainer>
+              <Typography component={Link} to={`/blog/${blog._id}`}>
+                Read More
+              </Typography>
+              <Box style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <ChatBubbleOutlineIcon />
+                <Typography>Chat</Typography>
+              </Box>
+            </FooterContainer>
+
+            <NameTimeContainer>
+              <Typography>{blog.userName}</Typography>
+              <Typography>{new Date(blog.createdAt).toLocaleDateString()}</Typography>
+            </NameTimeContainer>
+          </BlogDetailsBox>
+        ))
+      ) : (
+        <Typography variant="h6" textAlign="center" width="100%">
+          No blogs found matching your search.
+        </Typography>
+      )}
+    </SearchResultsContainer>
+  );
+
   return (
     <>
-      {/* ToastContainer to display the toast notifications */}
-      <ToastContainer />
-
+       <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <FullScreenContainer>
         <BoxContainer>
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-            fontFamily="'Roboto', sans-serif"
-          >
+          <Typography variant="h4" fontWeight="bold" fontFamily="'Roboto', sans-serif">
             News Hub
           </Typography>
 
           <HeaderContainer>
             <TextContainer>
-              <Typography
-                variant="body1"
-                mt={2}
-                maxWidth="70%"
-                fontSize="1.2rem"
-              >
+              <Typography variant="body1" mt={2} maxWidth="70%" fontSize="1.2rem">
                 Stay updated with the latest news and stories from around the world.
               </Typography>
             </TextContainer>
 
             <SearchBoxContainer>
-              <SearchInput placeholder="Search for news..." />
+              <SearchInput
+                placeholder="Search for news..."
+                value={searchKeyword}
+                onChange={handleSearchChange}
+                onKeyPress={handleSearch}
+              />
             </SearchBoxContainer>
           </HeaderContainer>
 
-          {/* BlogDisplay component here */}
-          <BlogDisplay page={page} />
-          
-          {/* Pagination Buttons with Text */}
-          <NavigationButtons>
-            <Box display="flex" alignItems="center">
-              <IconButton
-                color="primary"
-                onClick={handlePrevPage}
-                disabled={page === 1}
-              >
-                <NavigateBeforeIcon />
-              </IconButton>
-              {page > 1 && <NavigationText>Previous</NavigationText>}
-            </Box>
+          {/* Conditional rendering based on search state */}
+          {searchResults ? (
+            renderSearchResults()
+          ) : (
+            <>
+              <BlogDisplay page={page} />
+              <NavigationButtons>
+                <Box display="flex" alignItems="center">
+                  <IconButton color="primary" onClick={handlePrevPage} disabled={page === 1}>
+                    <NavigateBeforeIcon />
+                  </IconButton>
+                  {page > 1 && <NavigationText>Previous</NavigationText>}
+                </Box>
 
-            <Box display="flex" alignItems="center">
-              <IconButton
-                color="primary"
-                onClick={handleNextPage}
-              >
-                <NavigateNextIcon />
-              </IconButton>
-              <NavigationText>Next</NavigationText>
-            </Box>
-          </NavigationButtons>
+                <Box display="flex" alignItems="center">
+                  <IconButton color="primary" onClick={handleNextPage}>
+                    <NavigateNextIcon />
+                  </IconButton>
+                  <NavigationText>Next</NavigationText>
+                </Box>
+              </NavigationButtons>
+            </>
+          )}
         </BoxContainer>
       </FullScreenContainer>
 
-      {/* Fixed Buttons */}
       <ButtonContainer>
         <IconButton
           color="primary"
