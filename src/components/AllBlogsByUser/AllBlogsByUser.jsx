@@ -55,6 +55,12 @@ const ActionButtons = styled(Box)`
   gap: 8px;
 `;
 
+const ReadMoreButton = styled(Button)`
+  margin-top: 8px;
+  color: #2196f3;
+  text-transform: none;
+`;
+
 const AllBlogsByUser = () => {
   const { id } = useParams(); // Get the 'id' from the URL
   const [blogs, setBlogs] = useState([]); // State to hold blogs
@@ -64,7 +70,6 @@ const AllBlogsByUser = () => {
 
   // Fetch blogs when the component is mounted
   useEffect(() => {
-
     const fetchBlogs = async () => {
       try {
         setLoading(true);
@@ -90,6 +95,10 @@ const AllBlogsByUser = () => {
     navigate(`/editblog/${blogId}`); 
   };
 
+  const handleReadMoreClick = (blogId) => {
+    navigate(`/blog/${blogId}`); // Navigate to the blog details page
+  };
+
   return (
     <AllBlogsContainer maxWidth="md">
       {loading ? (
@@ -104,7 +113,14 @@ const AllBlogsByUser = () => {
             <BlogTitle>{blog.title}</BlogTitle>
             <BlogTopic>{blog.topic}</BlogTopic>
             <BlogContent>{blog.content}</BlogContent>
+            
+            {/* Read More Button */}
+            <ReadMoreButton onClick={() => handleReadMoreClick(blog._id)}>
+              Read More
+            </ReadMoreButton>
+
             <BlogDate>{new Date(blog.createdAt).toLocaleDateString()}</BlogDate>
+            
             <ActionButtons>
               <Button
                 variant="contained"

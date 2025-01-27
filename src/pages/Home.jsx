@@ -85,6 +85,7 @@ const SearchInput = styled(InputBase)`
 `;
 
 const ClearButton = styled(IconButton)`
+  color: #333;
   position: absolute;
   right: 10px;
   top: 50%;
@@ -314,16 +315,16 @@ const Home = () => {
     setTotalPages(total);
   }, []);
 
-  const handleClickOutside = (e) => {
-    if (searchInputRef.current && !searchInputRef.current.contains(e.target)) {
-      handleClearSearch();
-    }
-  };
+  // const handleClickOutside = (e) => {
+  //   if (searchInputRef.current && !searchInputRef.current.contains(e.target)) {
+  //     handleClearSearch();
+  //   }
+  // };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    // document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      // document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -332,20 +333,16 @@ const Home = () => {
       {searchResults.length > 0 ? (
         searchResults.map((blog, index) => (
           <BlogDetailsBox key={index}>
-            <BlogImageBox>
-              <img
-                src={blog.imageUrl}
-                alt="Blog"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  maxHeight: '0px',
-                  objectFit: 'cover',
-                  borderRadius: '8px',
-                }}
-              />
-            </BlogImageBox>
-
+            <img
+              src={blog.imageUrl}
+              alt="Blog"
+              style={{
+                width: '100%',
+                height: '160px', 
+                objectFit: 'cover',
+                borderRadius: '8px',
+              }}
+            />
             <BlogTitle>{blog.title}</BlogTitle>
             <BlogTopic>{blog.topic}</BlogTopic>
             <BlogContent>{blog.content}</BlogContent>
@@ -415,7 +412,7 @@ const Home = () => {
               />
               {searchKeyword && (
                 <ClearButton onClick={handleClearSearch}>
-                  <IconButton>Clear</IconButton>
+                  <IconButton sx={{ color: '#FF0000' }}>Clear</IconButton>
                 </ClearButton>
               )}
             </SearchBoxContainer>
