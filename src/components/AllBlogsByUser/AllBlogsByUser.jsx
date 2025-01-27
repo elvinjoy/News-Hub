@@ -22,6 +22,14 @@ const BlogBox = styled(Box)`
   position: relative;
 `;
 
+const BlogImage = styled("img")`
+  width: 100%; 
+  height: 200px; 
+  object-fit: cover;
+  margin-bottom: 16px;
+`;
+
+
 const BlogTitle = styled(Typography)`
   font-size: 1.5rem;
   font-weight: bold;
@@ -74,7 +82,6 @@ const AllBlogsByUser = () => {
       try {
         setLoading(true);
         const response = await axios.get(`${DEV_URL}/blog/allblogsbyuser/${id}`);
-        // console.log("Fetched blogs data:", response.data); 
         if (response.data && response.data.blogs) {
           setBlogs(response.data.blogs); // Ensure you're setting the blogs correctly
         } else {
@@ -82,7 +89,7 @@ const AllBlogsByUser = () => {
         }
       } catch (error) {
         setError("Failed to load blogs.");
-        console.error("Error fetching blogs:", error); 
+        console.error("Error fetching blogs:", error);
       } finally {
         setLoading(false);
       }
@@ -92,7 +99,7 @@ const AllBlogsByUser = () => {
   }, [id]);
 
   const handleEditClick = (blogId) => {
-    navigate(`/editblog/${blogId}`); 
+    navigate(`/editblog/${blogId}`);
   };
 
   const handleReadMoreClick = (blogId) => {
@@ -109,24 +116,27 @@ const AllBlogsByUser = () => {
         <Typography>No blogs found.</Typography>
       ) : (
         blogs.map((blog) => (
-          <BlogBox key={blog._id}> {/* Changed id to _id */}
+          <BlogBox key={blog._id}>
+            {/* Render Image at the top if exists */}
+            {blog.imageUrl && (
+              <BlogImage src={blog.imageUrl} alt="Blog Image" />
+            )}
             <BlogTitle>{blog.title}</BlogTitle>
             <BlogTopic>{blog.topic}</BlogTopic>
             <BlogContent>{blog.content}</BlogContent>
-            
-            {/* Read More Button */}
+
             <ReadMoreButton onClick={() => handleReadMoreClick(blog._id)}>
               Read More
             </ReadMoreButton>
 
             <BlogDate>{new Date(blog.createdAt).toLocaleDateString()}</BlogDate>
-            
+
             <ActionButtons>
               <Button
                 variant="contained"
                 color="primary"
                 size="small"
-                onClick={() => handleEditClick(blog._id)} // Handle click and pass the blog ID
+                onClick={() => handleEditClick(blog._id)}
               >
                 Edit
               </Button>
@@ -139,3 +149,4 @@ const AllBlogsByUser = () => {
 };
 
 export default AllBlogsByUser;
+  
