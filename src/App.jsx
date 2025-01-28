@@ -9,6 +9,7 @@ import AddBlog from "./pages/AddBlog/AddBlog";
 import ReadMore from "./pages/ReadMore/ReadMore";
 import AllBlogs from "./pages/AllBlogs/AllBlogs";
 import EditBlogPage from "./pages/EditBlogPage/EditBlogPage"
+import Comment from "./pages/Comment/Comment"
 import './App.css';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/blog/:id" element={<ReadMore />} />
           <Route path="/allblogsbyuser/:id" element={<AllBlogs />} />
           <Route path="/editblog/:id" element={<EditBlogPage />} />
+          <Route path="/comment/:id" element={<Comment />} />
         </Routes>
         <ToastContainer />
       </Router>

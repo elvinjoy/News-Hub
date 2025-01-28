@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import { styled } from "@mui/system"; 
 import { DEV_URL } from "../../Constants/Constants";
+import { useNavigate } from "react-router-dom";
 
 // Styled components for the blog layout
 const BlogDetailsBox = styled(Box)`
@@ -128,6 +129,7 @@ const BlogDisplay = ({ page, onUpdateTotalPages }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const limit = 9;
+  const navigate = useNavigate(); // Use the hook to navigate programmatically
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -137,10 +139,10 @@ const BlogDisplay = ({ page, onUpdateTotalPages }) => {
           params: {
             page,
             limit,
-            visibility: "public"
-          }
+            visibility: "public",
+          },
         });
-        
+
         if (response.data) {
           setBlogs(response.data.blogs);
           // Update the parent component's total pages
@@ -156,7 +158,7 @@ const BlogDisplay = ({ page, onUpdateTotalPages }) => {
     };
 
     fetchBlogs();
-  }, [page, onUpdateTotalPages]); 
+  }, [page, onUpdateTotalPages]);
 
   if (loading) {
     return (
@@ -179,10 +181,7 @@ const BlogDisplay = ({ page, onUpdateTotalPages }) => {
       {blogs.map((blog, index) => (
         <BlogDetailsBox key={blog._id || index}>
           <BlogImageBox>
-            <BlogImage
-              src={blog.imageUrl}
-              alt="Blog"
-            />
+            <BlogImage src={blog.imageUrl} alt="Blog" />
           </BlogImageBox>
 
           <BlogTitle>{blog.title}</BlogTitle>
@@ -194,7 +193,9 @@ const BlogDisplay = ({ page, onUpdateTotalPages }) => {
               Read More
             </ReadMoreButton>
             <ChatIconContainer>
-              <ChatBubbleOutlineIcon />
+              <ChatBubbleOutlineIcon
+                onClick={() => navigate(`/comment/${blog._id}`)}
+              />
               <Typography>Chat</Typography>
             </ChatIconContainer>
           </FooterContainer>
