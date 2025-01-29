@@ -3,7 +3,7 @@ import { Box, Typography, IconButton, Drawer, Divider, Button } from "@mui/mater
 import { Link, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useDispatch, useSelector } from "react-redux";
-import { clearUser } from "../../slices/userSlice";
+import { clearUser } from "../../Slices/userSlice";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 
