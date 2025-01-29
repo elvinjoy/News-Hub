@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { DEV_URL } from "../../Constants/Constants";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Comment = () => {
   const { id } = useParams();
@@ -20,7 +22,6 @@ const Comment = () => {
   if (token) {
     try {
       const decodedToken = jwtDecode(token);
-      console.log("Decoded Token:", decodedToken);
       userId = decodedToken.id;
       userName = decodedToken.name || "Anonymous";
     } catch (error) {
@@ -36,7 +37,9 @@ const Comment = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setComments(response.data.comments);
+
+        // Reverse the comments to show the latest first
+        setComments(response.data.comments.reverse());
       } catch (error) {
         console.error("Error fetching comments:", error);
         setComments([]);
@@ -49,8 +52,13 @@ const Comment = () => {
   }, [id, token]);
 
   const handleAddComment = async () => {
+    if (!token) {
+      toast.error("You need to be logged in to add a comment!");
+      return;
+    }
+  
     if (!newComment.trim()) return;
-
+  
     try {
       const commentData = {
         blogId: id,
@@ -58,11 +66,7 @@ const Comment = () => {
         userId,
         userName,
       };
-
-      console.log("UserId from token:", userId);
-      console.log("UserName from token:", userName);
-      console.log("Sending comment data:", commentData);
-
+  
       const response = await axios.post(
         `${DEV_URL}/comment/addcomment`,
         commentData,
@@ -72,15 +76,24 @@ const Comment = () => {
           },
         }
       );
-
+  
       if (response.data.success) {
-        setComments((prevComments) => [...prevComments, response.data.comment]);
+        // Add the new comment to the front so it appears first
+        setComments((prevComments) => [response.data.comment, ...prevComments]);
         setNewComment("");
       }
     } catch (error) {
-      console.error("Error adding comment:", error.response?.data || error);
+      // Check if the error is from the backend (e.g. Unauthorized or invalid token)
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Error adding comment.";
+        toast.error(errorMessage);
+      } else {
+        console.error("Error adding comment:", error);
+        toast.error("An unexpected error occurred.");
+      }
     }
   };
+  
 
   return (
     <Box
@@ -103,10 +116,6 @@ const Comment = () => {
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <Typography variant="h6" sx={{ marginBottom: "1rem" }}>
-          Token: {token ? token.slice(0, 20) + "..." : "No Token Found"}
-        </Typography>
-
         <Typography variant="h4" gutterBottom>
           Comments
         </Typography>
@@ -136,13 +145,17 @@ const Comment = () => {
                   borderBottom: index !== comments.length - 1 ? "1px solid #ccc" : "none",
                 }}
               >
-                <Typography variant="subtitle1" fontWeight="bold">
-                  {comment.userName || "Anonymous"}
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    Commented By: {comment.userName || "Anonymous"}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </Typography>
+                </Box>
+                <Typography variant="body1" sx={{ marginTop: "0.5rem" }}>
+                  Comment: {comment.text}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {new Date(comment.createdAt).toLocaleString()}
-                </Typography>
-                <Typography variant="body1">{comment.text}</Typography>
               </Box>
             ))}
           </Box>
