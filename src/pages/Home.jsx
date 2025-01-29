@@ -10,7 +10,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { jwtDecode } from 'jwt-decode';
-import { DEV_URL } from '../Constants/Constants';
+import { DEV_URL } from '../constants/Constants';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
