@@ -1,2 +1,2 @@
 
-export const DEV_URL = "http://localhost:3000/api";
+export const DEV_URL = "https://news-hub-backend.onrender.com/api";
