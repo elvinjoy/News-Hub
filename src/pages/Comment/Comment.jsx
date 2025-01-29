@@ -3,23 +3,37 @@ import axios from "axios";
 import { Box, Typography, TextField, Button, CircularProgress } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { jwtDecode } from "jwt-decode";
+import { DEV_URL } from "../../Constants/Constants";
 
 const Comment = () => {
-  const { id } = useParams(); // Get blog ID from the route
+  const { id } = useParams();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const API_URL = "https://example.com/api/comments"; // Demo API URL
-  const token = useSelector((state) => state.user.token); // Fetch token from Redux
+  const token = useSelector((state) => state.user.token);
 
-  // Fetch comments when the page loads
+  let userId = null;
+  let userName = "Anonymous";
+
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token);
+      console.log("Decoded Token:", decodedToken);
+      userId = decodedToken.id;
+      userName = decodedToken.name || "Anonymous";
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
+  }
+
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`${API_URL}/${id}`, {
+        const response = await axios.get(`${DEV_URL}/comment/getcomments/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Pass token in headers
+            Authorization: `Bearer ${token}`,
           },
         });
         setComments(response.data.comments);
@@ -34,17 +48,27 @@ const Comment = () => {
     fetchComments();
   }, [id, token]);
 
-  // Handle adding a new comment
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
 
     try {
+      const commentData = {
+        blogId: id,
+        text: newComment,
+        userId,
+        userName,
+      };
+
+      console.log("UserId from token:", userId);
+      console.log("UserName from token:", userName);
+      console.log("Sending comment data:", commentData);
+
       const response = await axios.post(
-        `${API_URL}/${id}`,
-        { comment: newComment },
+        `${DEV_URL}/comment/addcomment`,
+        commentData,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Pass token in headers
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -54,7 +78,7 @@ const Comment = () => {
         setNewComment("");
       }
     } catch (error) {
-      console.error("Error adding comment:", error);
+      console.error("Error adding comment:", error.response?.data || error);
     }
   };
 
