@@ -1,8 +1,59 @@
-# React + Vite
+# NEWS HUB
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Overview
+This is a full-stack blogging platform built using the MERN (MongoDB, Express.js, React, Node.js) stack. It allows users to create, manage, and interact with blog posts. The project includes user authentication, public and private posts, a commenting system, and search functionality.
 
-Currently, two official plugins are available:
+## Features
+- User authentication with JWT
+- Create, edit, and delete blog posts
+- Public and private posts
+- Commenting system
+- Search and pagination
+- State management using Redux
+- Responsive UI
+- Deployment on free hosting services
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Deployment Details
+### Frontend
+- Framework: **React (Vite)**
+- Deployment Platform: **Vercel**
+- Live URL: **[Frontend Link](https://news-350z4o8lz-elvin-joys-projects.vercel.app)**
+- Start Command: **`npm run dev`**
+
+### Backend
+- Framework: **Node.js & Express.js**
+- Database: **MongoDB (Mongoose)**
+- Deployment Platform: **Render.com**
+- Live URL: **[Backend Link](https://news-hub-backend.onrender.com)**
+- Start Command: **`node index.js` / `nodemon index.js`**
+
+## Installation & Setup
+#### Clone Repository (Frontend)
+```sh
+ git clone https://github.com/elvinjoy/News-Hub.git
+
+ cd News-Hub
+
+ npm install
+
+ npm run dev
+
+```
+
+#### Clone Repository (Backend)
+```sh
+ git clone https://github.com/elvinjoy/News-Hub-Backend.git
+
+ cd News-Hub-Backend
+
+ npm install
+
+ node index.js
+
+```
+---
+#### DEMO
+
+- Frontend Live URL: **[Frontend Link](https://news-350z4o8lz-elvin-joys-projects.vercel.app)**
+
+- Backend Live URL: **[Backend Link](https://news-hub-backend.onrender.com)**
