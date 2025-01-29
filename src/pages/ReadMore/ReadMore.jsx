@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, styled, CircularProgress } from "@mui/material";
 import { useParams } from "react-router-dom"; // To get the blog ID from the route
 import axios from "axios";
-import { DEV_URL } from "../../Constants/Constants";
+import { DEV_URL } from "../../constants/Constants";
 
 // Styled components for the background and content container
 const FullScreenContainer = styled(Box)`

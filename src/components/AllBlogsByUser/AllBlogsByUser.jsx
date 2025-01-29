@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, styled, Button, Container } from "@mui/material";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
-import { DEV_URL } from "../../Constants/Constants";
+import { DEV_URL } from "../../constants/Constants";
 
 // Styled components
 const AllBlogsContainer = styled(Container)`

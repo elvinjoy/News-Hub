@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ImageKit from "imagekit";
-import { DEV_URL } from "../../Constants/Constants";
+import { DEV_URL } from "../../constants/Constants";
 
 const AddBlogContainer = styled(Container)`
   height: 100vh;

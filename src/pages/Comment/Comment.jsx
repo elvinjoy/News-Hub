@@ -4,7 +4,7 @@ import { Box, Typography, TextField, Button, CircularProgress } from "@mui/mater
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
-import { DEV_URL } from "../../Constants/Constants";
+import { DEV_URL } from "../../constants/Constants";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 

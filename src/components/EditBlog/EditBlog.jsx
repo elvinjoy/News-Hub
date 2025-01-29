@@ -17,7 +17,7 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { DEV_URL } from "../../Constants/Constants";
+import { DEV_URL } from "../../constants/Constants";
 import { useSelector } from "react-redux"; // Import useSelector to get token
 
 const EditBlogContainer = styled(Container)`

@@ -4,7 +4,7 @@ import { Box, Typography, CircularProgress, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import { styled } from "@mui/system"; 
-import { DEV_URL } from "../../Constants/Constants";
+import { DEV_URL } from "../../constants/Constants";
 import { useNavigate } from "react-router-dom";
 
 // Styled components for the blog layout
