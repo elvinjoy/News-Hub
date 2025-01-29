@@ -81,19 +81,19 @@ const Footer = () => {
               <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
                 Product
               </Typography>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 Features
               </Link>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 Testimonials
               </Link>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 Highlights
               </Link>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 Pricing
               </Link>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 FAQs
               </Link>
             </Grid>
@@ -102,13 +102,13 @@ const Footer = () => {
               <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
                 Company
               </Typography>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 About us
               </Link>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 Careers
               </Link>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 Press
               </Link>
             </Grid>
@@ -117,13 +117,13 @@ const Footer = () => {
               <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
                 Legal
               </Typography>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 Terms
               </Link>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 Privacy
               </Link>
-              <Link href="#" underline="hover" color="inherit" display="block">
+              <Link href="https://github.com/elvinjoy" underline="hover" color="inherit" display="block">
                 Contact
               </Link>
             </Grid>
