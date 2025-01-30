@@ -57,3 +57,5 @@ This is a full-stack blogging platform built using the MERN (MongoDB, Express.js
 - Frontend Live URL: **[Frontend Link](https://news-350z4o8lz-elvin-joys-projects.vercel.app)**
 
 - Backend Live URL: **[Backend Link](https://news-hub-backend.onrender.com)**
+---
+If the **Backend's** live URL returns an **HTTP 500 Internal Server Error**, simply refresh the page. This will activate the APIs. The backend is hosted on Render's free tier, which deactivates the service after 15 minutes of inactivity.
