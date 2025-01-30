@@ -58,4 +58,8 @@ This is a full-stack blogging platform built using the MERN (MongoDB, Express.js
 
 - Backend Live URL: **[Backend Link](https://news-hub-backend.onrender.com)**
 ---
+### Backend Live URL Error 
+
 If the **Backend's** live URL returns an **HTTP 500 Internal Server Error**, simply refresh the page. This will activate the APIs. The backend is hosted on Render's free tier, which deactivates the service after 15 minutes of inactivity.
+### If it's still not working, contact me at 8129808383, and I will manually activate the backend link
+---
